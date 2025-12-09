@@ -1,0 +1,29 @@
+{
+  "date": "2025-12-05T08:34:43.307838",
+  "version": "1.0.0",
+  "model": "DistilBERT (fine-tuned)",
+  "dataset": {
+    "source": "MALT",
+    "train_samples": 5025,
+    "test_samples": 1077,
+    "hack_rate": "3.6%"
+  },
+  "key_findings": {
+    "optimal_threshold": 0.02,
+    "test_f1": 0.8974358974358975,
+    "cv_f1_mean": 0.874,
+    "cv_f1_std": 0.029,
+    "brier_score": 0.033258106820898,
+    "ece": 0.027232816473329258,
+    "statistical_significance": "p < 0.000001"
+  },
+  "ablation_findings": {
+    "best_config": "ML Only (89.7% F1)",
+    "insight": "Pattern detector hurts F1 when combined - produces false positives"
+  },
+  "reproducibility": {
+    "script": "scripts/run_all_experiments.sh",
+    "environment": "environment.yml",
+    "random_seed": 42
+  }
+}

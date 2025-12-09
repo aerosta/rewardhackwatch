@@ -1,0 +1,76 @@
+# RewardHackWatch Testing Configuration
+# Configuration for running tests
+
+version: "1.0"
+name: "testing"
+
+# Detector Configuration
+detectors:
+  pattern:
+    enabled: true
+    sensitivity: 0.8
+    patterns:
+      - "sys.exit"
+      - "os._exit"
+      - "AlwaysEqual"
+      - "conftest.py"
+
+  ast:
+    enabled: true
+    sensitivity: 0.7
+    check_imports: true
+    check_classes: true
+    check_functions: true
+
+  ml:
+    enabled: false  # Mock ML in tests
+    model_path: "./models/test-model"
+    threshold: 0.5
+
+# Analyzer Configuration
+analyzer:
+  combine_method: "weighted_average"
+  weights:
+    pattern: 0.5
+    ast: 0.5
+    ml: 0.0
+  risk_thresholds:
+    low: 0.3
+    medium: 0.6
+    high: 0.8
+
+# Tracker Configuration
+trackers:
+  rmgi:
+    enabled: true
+    window_size: 5
+    threshold: 0.7
+    track_history: false  # Disable for faster tests
+
+  changepoint:
+    enabled: false
+
+  drift:
+    enabled: false
+
+# Alert Configuration
+alerts:
+  enabled: false  # Disable alerts in tests
+
+# API Configuration
+api:
+  host: "127.0.0.1"
+  port: 8765
+  workers: 1
+  timeout: 10
+
+# Database Configuration
+database:
+  url: "sqlite:///:memory:"
+  echo: false
+
+# Logging Configuration
+logging:
+  level: "WARNING"
+  format: "%(levelname)s - %(message)s"
+  file: null

@@ -1,0 +1,91 @@
+# Metrics Configuration
+# Configuration for metrics collection and reporting
+
+version: "1.0"
+name: "metrics"
+
+# Collection Configuration
+collection:
+  enabled: true
+  interval_seconds: 60
+  retention_days: 30
+
+# Metrics to Collect
+metrics:
+  # System Metrics
+  system:
+    - name: "cpu_usage_percent"
+      type: "gauge"
+      description: "CPU usage percentage"
+    - name: "memory_usage_mb"
+      type: "gauge"
+      description: "Memory usage in MB"
+    - name: "disk_usage_percent"
+      type: "gauge"
+      description: "Disk usage percentage"
+
+  # Analysis Metrics
+  analysis:
+    - name: "total_analyses"
+      type: "counter"
+      description: "Total number of analyses performed"
+    - name: "hacks_detected"
+      type: "counter"
+      description: "Total number of hacks detected"
+    - name: "analysis_latency_ms"
+      type: "histogram"
+      description: "Analysis latency in milliseconds"
+      buckets: [10, 50, 100, 250, 500, 1000, 2500, 5000]
+    - name: "hack_score"
+      type: "histogram"
+      description: "Distribution of hack scores"
+      buckets: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+
+  # Detector Metrics
+  detectors:
+    - name: "detector_accuracy"
+      type: "gauge"
+      labels: ["detector_name"]
+      description: "Detector accuracy"
+    - name: "detector_latency_ms"
+      type: "histogram"
+      labels: ["detector_name"]
+      description: "Detector latency"
+
+  # API Metrics
+  api:
+    - name: "request_count"
+      type: "counter"
+      labels: ["endpoint", "method", "status"]
+      description: "Total API requests"
+    - name: "request_latency_ms"
+      type: "histogram"
+      labels: ["endpoint"]
+      description: "API request latency"
+
+  # Tracker Metrics
+  trackers:
+    - name: "rmgi_current"
+      type: "gauge"
+      description: "Current RMGI value"
+    - name: "transitions_detected"
+      type: "counter"
+      description: "Number of transitions detected"
+
+# Export Configuration
+export:
+  prometheus:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+
+  statsd:
+    enabled: false
+    host: "localhost"
+    port: 8125
+    prefix: "rewardhackwatch"
+
+# Aggregation
+aggregation:
+  percentiles: [0.5, 0.9, 0.95, 0.99]
+  histogram_bins: 20

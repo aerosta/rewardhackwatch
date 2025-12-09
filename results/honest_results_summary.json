@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-12-05T07:48:50.865497",
+  "project": "RewardHackWatch v1.0.0",
+  "validation_status": "VALIDATED",
+  "metrics": {
+    "ml_classifier": {
+      "test_samples": 1077,
+      "f1_score": 0.8974358974358975,
+      "precision": 0.8974358974358975,
+      "recall": 0.8974358974358975,
+      "accuracy": 0.9925719591457753,
+      "optimal_threshold": 0.02,
+      "status": "VALIDATED - proper held-out test set"
+    },
+    "training_reported": {
+      "f1": 0.9090909090909091,
+      "accuracy": 0.9935004642525533,
+      "note": "Slight difference due to threshold optimization"
+    }
+  },
+  "statistics": {
+    "python_files": 207,
+    "lines_of_code": 47205,
+    "test_count": 686,
+    "pattern_categories": 45,
+    "total_patterns": 135,
+    "training_samples": 5025,
+    "test_samples": 1077
+  },
+  "contributions": {
+    "rmgi_metric": "Implemented - formal definition in docs/RMGI_DEFINITION.md",
+    "generalization_tracking": "Implemented - PELT changepoint detection",
+    "multi_signal_detection": "Implemented - Pattern + AST + ML + CoT + Effort",
+    "sycophancy_patterns": "Implemented - 8 patterns",
+    "reward_tampering_patterns": "Implemented - 8 patterns"
+  }
+}

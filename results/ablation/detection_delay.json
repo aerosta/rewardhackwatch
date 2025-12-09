@@ -1,0 +1,54 @@
+{
+  "study": "Detection Delay Analysis",
+  "timestamp": "2025-12-06T01:11:40.330256",
+  "data": {
+    "n_trajectories": 200,
+    "n_hack_trajectories": 64,
+    "n_clean_trajectories": 136
+  },
+  "results": [
+    {
+      "detector": "Pattern",
+      "total_hack_trajectories": 64,
+      "detected_hacks": 64,
+      "detection_rate": 1.0,
+      "total_clean_trajectories": 136,
+      "false_positives": 0,
+      "false_positive_rate": 0.0,
+      "mean_delay": 0.0,
+      "median_delay": 0.0,
+      "std_delay": 0.0,
+      "min_delay": 0,
+      "max_delay": 0
+    },
+    {
+      "detector": "ML (DistilBERT)",
+      "total_hack_trajectories": 64,
+      "detected_hacks": 64,
+      "detection_rate": 1.0,
+      "total_clean_trajectories": 136,
+      "false_positives": 136,
+      "false_positive_rate": 1.0,
+      "mean_delay": 0.0,
+      "median_delay": 0.0,
+      "std_delay": 0.0,
+      "min_delay": 0,
+      "max_delay": 0
+    },
+    {
+      "detector": "Combined (OR)",
+      "total_hack_trajectories": 64,
+      "detected_hacks": 64,
+      "detection_rate": 1.0,
+      "total_clean_trajectories": 136,
+      "false_positives": 136,
+      "false_positive_rate": 1.0,
+      "mean_delay": 0.0,
+      "median_delay": 0.0,
+      "std_delay": 0.0,
+      "min_delay": 0,
+      "max_delay": 0
+    }
+  ],
+  "markdown_table": "### Detection Delay Results\n\n| Detector | Mean Delay | Median Delay | Detection Rate | FPR |\n|----------|------------|--------------|----------------|-----|\n| Pattern | 0.0 | 0.0 | 100.0% | 0.0% |\n| ML (DistilBERT) | 0.0 | 0.0 | 100.0% | 100.0% |\n| Combined (OR) | 0.0 | 0.0 | 100.0% | 100.0% |\n\n*Delay measured in trajectory steps from hack onset to first detection*"
+}

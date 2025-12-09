@@ -1,0 +1,67 @@
+# Dashboard Configuration
+# Configuration for Streamlit dashboard
+
+version: "1.0"
+name: "dashboard"
+
+# Server Configuration
+server:
+  port: 8501
+  host: "0.0.0.0"
+  enable_cors: true
+
+# UI Configuration
+ui:
+  title: "RewardHackWatch Dashboard"
+  theme: "dark"
+  sidebar_state: "expanded"
+  page_icon: "🔍"
+
+# Layout Configuration
+layout:
+  default_page: "overview"
+  pages:
+    - name: "overview"
+      title: "Overview"
+      icon: "📊"
+    - name: "analysis"
+      title: "Analysis"
+      icon: "🔬"
+    - name: "tracking"
+      title: "RMGI Tracking"
+      icon: "📈"
+    - name: "alerts"
+      title: "Alerts"
+      icon: "🚨"
+    - name: "benchmarks"
+      title: "Benchmarks"
+      icon: "📋"
+
+# Charts Configuration
+charts:
+  default_height: 400
+  color_scheme: "viridis"
+  animation: true
+
+# Data Refresh
+refresh:
+  auto_refresh: false
+  interval_seconds: 30
+  max_history_points: 1000
+
+# Alert Display
+alerts_display:
+  max_visible: 50
+  show_resolved: false
+  severity_colors:
+    info: "#3498db"
+    warning: "#f39c12"
+    critical: "#e74c3c"
+
+# File Upload
+file_upload:
+  enabled: true
+  max_file_size_mb: 10
+  allowed_extensions:
+    - json
+    - jsonl

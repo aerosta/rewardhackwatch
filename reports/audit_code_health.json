@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-12-05T08:51:58.019272",
+  "code_health": {
+    "components": {
+      "PatternDetector": "\u274c ",
+      "ML Model": "\u2705 (score=0.1701)",
+      "GeneralizationTracker": "\u274c 'GeneralizationTracker' object has no attribute 'get_summary'",
+      "InoculationTracker": "\u2705 (score=0.23)",
+      "EffortAnalyzer": "\u2705",
+      "CoTAnalyzer": "\u2705"
+    }
+  },
+  "imports": {
+    "rewardhackwatch": "\u2705",
+    "rewardhackwatch.core": "\u2705",
+    "rewardhackwatch.core.detectors.pattern_detector": "\u2705",
+    "rewardhackwatch.core.detectors.ast_detector": "\u2705",
+    "rewardhackwatch.core.detectors.ml_detector": "\u2705",
+    "rewardhackwatch.core.analyzers.cot_analyzer": "\u2705",
+    "rewardhackwatch.core.analyzers.effort_analyzer": "\u2705",
+    "rewardhackwatch.core.analyzers.inoculation_tracker": "\u2705",
+    "rewardhackwatch.core.trackers.generalization_tracker": "\u2705",
+    "rewardhackwatch.core.judges.claude_judge": "\u2705",
+    "rewardhackwatch.core.judges.llama_judge": "\u2705",
+    "rewardhackwatch.training.model_loader": "\u2705",
+    "rewardhackwatch.api.main": "\u2705",
+    "rewardhackwatch.cli": "\u2705"
+  },
+  "tests": {},
+  "documentation": {},
+  "bugs_found": [
+    "PatternDetector error: ",
+    "GeneralizationTracker error: 'GeneralizationTracker' object has no attribute 'get_summary'"
+  ],
+  "warnings": [],
+  "recommendations": []
+}

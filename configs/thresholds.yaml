@@ -1,0 +1,7 @@
+# Validated threshold based on calibrated model probabilities
+# Model trained on imbalanced data (3.6% hack rate)
+# Optimal threshold: 0.02 (discovered via validation)
+detection:
+  ml_threshold: 0.02
+  pattern_threshold: 0.3
+  combined_threshold: 0.02

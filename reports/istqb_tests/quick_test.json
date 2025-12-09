@@ -1,0 +1,87 @@
+{
+  "bugs": [
+    {
+      "severity": "HIGH",
+      "component": "API",
+      "description": "/status returned 503",
+      "details": "",
+      "timestamp": "2025-12-05T09:02:23.535400"
+    },
+    {
+      "severity": "HIGH",
+      "component": "API",
+      "description": "/analyze returned 500: {\"detail\":\"Application not initialized\"}",
+      "details": "",
+      "timestamp": "2025-12-05T09:02:23.537344"
+    }
+  ],
+  "test_results": [
+    {
+      "name": "PatternDetector.detect() accepts string",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "PatternDetector.detect() accepts dict",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "PatternDetector handles empty string",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "PatternDetector handles None",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "PatternDetector handles unicode",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "ML model loads successfully",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "predict_proba returns valid probability",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "ML model handles empty input",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "GeneralizationTracker initializes",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "update() works",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "get_summary() returns dict with correlation",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "name": "GET /status returns 200",
+      "passed": false,
+      "details": ""
+    },
+    {
+      "name": "POST /analyze returns 200",
+      "passed": false,
+      "details": ""
+    }
+  ],
+  "passed": 11,
+  "failed": 2
+}

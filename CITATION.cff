@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: "RewardHackWatch: Real-Time Detection of Reward Hacking Generalization"
+message: "If you use RewardHackWatch in your research, please cite it using this metadata."
+type: software
+authors:
+  - family-names: "PLACEHOLDER"
+    given-names: "PLACEHOLDER"
+repository-code: "https://github.com/PLACEHOLDER/rewardhackwatch"
+url: "https://github.com/PLACEHOLDER/rewardhackwatch"
+license: MIT
+version: "0.1.0"
+date-released: "2025-01-01"
+keywords:
+  - ai-safety
+  - reward-hacking
+  - misalignment
+  - llm
+  - monitoring
+  - machine-learning
+abstract: >-
+  RewardHackWatch is a real-time detection system for identifying
+  when reward hacking in LLM agents generalizes to broader misalignment
+  behaviors. It combines pattern detection, ML classification, LLM judges,
+  and generalization tracking to catch the critical transition point
+  from task-specific cheating to dangerous misalignment.
+references:
+  - type: article
+    title: "Emergent Misalignment: Narrow finetuning can produce broadly misaligned LLMs"
+    authors:
+      - family-names: "Anthropic"
+    year: 2025
+    url: "https://www.anthropic.com/research/emergent-misalignment-reward-hacking"
+  - type: article
+    title: "Chain of Thought Monitoring"
+    authors:
+      - family-names: "OpenAI"
+    year: 2025
+    url: "https://openai.com/index/chain-of-thought-monitoring/"

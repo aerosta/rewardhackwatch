@@ -1,0 +1,43 @@
+# RewardHackWatch Environment
+# Create with: conda env create -f environment.yml
+# Or use: pip install -e ".[dev]"
+
+name: rewardhackwatch
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python>=3.9,<3.13
+  - pytorch>=2.0.0
+  - pip
+  - pip:
+    - transformers>=4.30.0
+    - accelerate>=0.20.0
+    - safetensors>=0.3.0
+    - datasets>=2.14.0
+    - anthropic>=0.20.0
+    - ollama>=0.1.0
+    - openai>=1.0.0
+    - fastapi>=0.100.0
+    - uvicorn[standard]>=0.20.0
+    - pydantic>=2.0.0
+    - streamlit>=1.20.0
+    - plotly>=5.10.0
+    - scipy>=1.10.0
+    - numpy>=1.24.0
+    - pandas>=2.0.0
+    - scikit-learn>=1.2.0
+    - ruptures>=1.1.9
+    - pyyaml>=6.0.0
+    - rich>=13.0.0
+    - typer>=0.9.0
+    - python-dotenv>=1.0.0
+    - tqdm>=4.60.0
+    - loguru>=0.7.0
+    - pytest>=8.3.0
+    - pytest-asyncio>=0.24.0
+    - pytest-cov>=5.0.0
+    - black>=24.10.0
+    - ruff>=0.7.0

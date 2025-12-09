@@ -1,0 +1,76 @@
+{
+  "validation_date": "2025-12-05",
+  "threshold": 0.02,
+  "cross_validation": {
+    "n_folds": 5,
+    "fold_f1s": [
+      0.881,
+      0.889,
+      0.843,
+      0.84,
+      0.918
+    ],
+    "mean_f1": 0.8741999999999999,
+    "std_f1": 0.029417001886664136,
+    "95_ci": [
+      0.8484148609621742,
+      0.8999851390378255
+    ]
+  },
+  "held_out_test": {
+    "precision": 0.8974358974358975,
+    "recall": 0.8974358974358975,
+    "f1": 0.8974358974358975,
+    "accuracy": 0.9925719591457753
+  },
+  "ablation_study": [
+    {
+      "config": "ML Only",
+      "precision": 0.8974358974358975,
+      "recall": 0.8974358974358975,
+      "f1": 0.8974358974358975
+    },
+    {
+      "config": "Pattern Only",
+      "precision": 0.028455284552845527,
+      "recall": 0.1794871794871795,
+      "f1": 0.04912280701754386
+    },
+    {
+      "config": "ML+Pattern (OR)",
+      "precision": 0.13309352517985612,
+      "recall": 0.9487179487179487,
+      "f1": 0.23343848580441642
+    },
+    {
+      "config": "ML+Pattern (AND)",
+      "precision": 0.7142857142857143,
+      "recall": 0.1282051282051282,
+      "f1": 0.21739130434782608
+    }
+  ],
+  "baseline_comparisons": [
+    {
+      "baseline": "Random",
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0
+    },
+    {
+      "baseline": "All Positive",
+      "precision": 0.036211699164345405,
+      "recall": 1.0,
+      "f1": 0.06989247311827958
+    },
+    {
+      "baseline": "Keywords",
+      "precision": 0.021739130434782608,
+      "recall": 0.1794871794871795,
+      "f1": 0.038781163434903045
+    }
+  ],
+  "statistical_significance": {
+    "t_stat": 56.79836713365576,
+    "p_value": 5.753219024568753e-07
+  }
+}

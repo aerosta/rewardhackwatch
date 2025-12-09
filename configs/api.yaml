@@ -1,0 +1,71 @@
+# API Configuration
+# Configuration for FastAPI server
+
+version: "1.0"
+name: "api"
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 30
+  keep_alive: 5
+
+# CORS Configuration
+cors:
+  enabled: true
+  allow_origins:
+    - "*"
+  allow_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+  allow_headers:
+    - "*"
+  max_age: 600
+
+# Rate Limiting
+rate_limit:
+  enabled: true
+  requests_per_minute: 100
+  burst: 20
+  by_endpoint: false
+
+# Authentication
+auth:
+  enabled: false
+  type: "api_key"
+  header_name: "X-API-Key"
+
+# Request Validation
+validation:
+  max_payload_size_mb: 10
+  max_trajectories_per_batch: 100
+  timeout_per_trajectory: 5
+
+# Response Configuration
+response:
+  include_timing: true
+  include_detector_details: true
+  pretty_print: false
+
+# Health Check
+health:
+  endpoint: "/status"
+  include_version: true
+  include_uptime: true
+
+# Metrics
+metrics:
+  enabled: true
+  endpoint: "/metrics"
+  include_latency_histogram: true
+
+# Documentation
+docs:
+  enabled: true
+  title: "RewardHackWatch API"
+  description: "API for detecting reward hacking in LLM agent trajectories"
+  version: "1.0.0"

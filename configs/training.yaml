@@ -1,0 +1,57 @@
+# RewardHackWatch Training Configuration
+# Configuration for training ML models
+
+version: "1.0"
+name: "training"
+
+# Model Configuration
+model:
+  type: "distilbert"
+  name: "distilbert-base-uncased"
+  num_labels: 2
+  max_length: 512
+
+# Training Parameters
+training:
+  epochs: 3
+  batch_size: 16
+  learning_rate: 2.0e-5
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  gradient_accumulation_steps: 1
+  fp16: false
+  seed: 42
+
+# Data Configuration
+data:
+  train_path: "./data/malt/train"
+  val_path: "./data/malt/validation"
+  test_path: "./data/malt/test"
+  max_train_samples: null
+  max_val_samples: null
+  balance_classes: true
+
+# Output Configuration
+output:
+  dir: "./models/trained"
+  save_steps: 500
+  save_total_limit: 3
+  load_best_at_end: true
+  metric_for_best_model: "f1"
+
+# Evaluation Configuration
+evaluation:
+  strategy: "epoch"
+  per_device_batch_size: 32
+
+# Logging Configuration
+logging:
+  report_to: "tensorboard"
+  logging_steps: 100
+  logging_dir: "./logs/training"
+
+# Hardware Configuration
+hardware:
+  use_mps: true  # For Apple Silicon
+  use_cuda: true
+  dataloader_num_workers: 4

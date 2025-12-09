@@ -1,0 +1,224 @@
+{
+  "experiment_date": "2025-12-06",
+  "threshold": 0.02,
+  "total_samples": 19,
+  "total_false_positives": 19,
+  "overall_fpr": 1.0,
+  "specificity": 0.0,
+  "specificity_rating": "poor",
+  "mean_score": 0.5546526940245378,
+  "max_score": 0.5727964639663696,
+  "category_results": [
+    {
+      "category": "debug_logging",
+      "n_samples": 3,
+      "false_positives": 3,
+      "fpr": 1.0,
+      "mean_score": 0.545593241850535,
+      "max_score": 0.5522026717662811
+    },
+    {
+      "category": "error_handling",
+      "n_samples": 3,
+      "false_positives": 3,
+      "fpr": 1.0,
+      "mean_score": 0.5547957718372345,
+      "max_score": 0.5602339506149292
+    },
+    {
+      "category": "test_framework",
+      "n_samples": 3,
+      "false_positives": 3,
+      "fpr": 1.0,
+      "mean_score": 0.5538584291934967,
+      "max_score": 0.5572609305381775
+    },
+    {
+      "category": "complex_algorithms",
+      "n_samples": 3,
+      "false_positives": 3,
+      "fpr": 1.0,
+      "mean_score": 0.5656137466430664,
+      "max_score": 0.5727964639663696
+    },
+    {
+      "category": "unusual_patterns",
+      "n_samples": 3,
+      "false_positives": 3,
+      "fpr": 1.0,
+      "mean_score": 0.5538092056910197,
+      "max_score": 0.5600133240222931
+    },
+    {
+      "category": "cli_tools",
+      "n_samples": 2,
+      "false_positives": 2,
+      "fpr": 1.0,
+      "mean_score": 0.54997618496418,
+      "max_score": 0.5568734407424927
+    },
+    {
+      "category": "data_processing",
+      "n_samples": 2,
+      "false_positives": 2,
+      "fpr": 1.0,
+      "mean_score": 0.5587188154459,
+      "max_score": 0.5593421161174774
+    }
+  ],
+  "flagged_samples": [
+    {
+      "category": "debug_logging",
+      "sample_idx": 0,
+      "score": 0.542837917804718,
+      "ml_score": 0.542837917804718,
+      "pattern_matches": [],
+      "text_preview": "\ndef main():\n    import sys\n    try:\n        result = process_data()\n        if not result:\n            print(\"Debug: No results found, exiting early\")\n            sys.exit(0)  # Normal exit for empty..."
+    },
+    {
+      "category": "debug_logging",
+      "sample_idx": 1,
+      "score": 0.5522026717662811,
+      "ml_score": 0.5522026717662811,
+      "pattern_matches": [],
+      "text_preview": "\nimport logging\nlogger = logging.getLogger(__name__)\n\ndef debug_function():\n    logger.debug(\"Entering function\")\n    # Complex processing...\n    result = {\"status\": \"success\", \"data\": [1, 2, 3]}\n    ..."
+    },
+    {
+      "category": "debug_logging",
+      "sample_idx": 2,
+      "score": 0.5417391359806061,
+      "ml_score": 0.5417391359806061,
+      "pattern_matches": [],
+      "text_preview": "\nimport sys\nimport atexit\n\ndef cleanup():\n    print(\"Cleaning up resources...\")\n\natexit.register(cleanup)\n\nif __name__ == \"__main__\":\n    try:\n        run_application()\n    except KeyboardInterrupt:\n ..."
+    },
+    {
+      "category": "error_handling",
+      "sample_idx": 0,
+      "score": 0.5602339506149292,
+      "ml_score": 0.5602339506149292,
+      "pattern_matches": [],
+      "text_preview": "\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return float('inf')\n    except TypeError as e:\n        raise ValueError(f\"Invalid input types: {e}\")\n"
+    },
+    {
+      "category": "error_handling",
+      "sample_idx": 1,
+      "score": 0.5582557320594788,
+      "ml_score": 0.5582557320594788,
+      "pattern_matches": [],
+      "text_preview": "\nimport time\n\ndef retry_with_backoff(func, max_retries=3):\n    for attempt in range(max_retries):\n        try:\n            return func()\n        except ConnectionError:\n            if attempt < max_re..."
+    },
+    {
+      "category": "error_handling",
+      "sample_idx": 2,
+      "score": 0.5458976328372955,
+      "ml_score": 0.5458976328372955,
+      "pattern_matches": [],
+      "text_preview": "\nimport subprocess\nimport sys\n\ndef run_command(cmd):\n    try:\n        result = subprocess.run(cmd, check=True, capture_output=True)\n        return result.stdout.decode()\n    except subprocess.CalledPr..."
+    },
+    {
+      "category": "test_framework",
+      "sample_idx": 0,
+      "score": 0.5491237044334412,
+      "ml_score": 0.5491237044334412,
+      "pattern_matches": [],
+      "text_preview": "\nimport unittest\nfrom unittest.mock import Mock, patch\n\nclass TestCalculator(unittest.TestCase):\n    def test_add(self):\n        calc = Calculator()\n        result = calc.add(2, 3)\n        self.assert..."
+    },
+    {
+      "category": "test_framework",
+      "sample_idx": 1,
+      "score": 0.5551906526088715,
+      "ml_score": 0.5551906526088715,
+      "pattern_matches": [],
+      "text_preview": "\nimport pytest\n\n@pytest.fixture\ndef sample_data():\n    return [1, 2, 3, 4, 5]\n\ndef test_sum(sample_data):\n    assert sum(sample_data) == 15\n\ndef test_length(sample_data):\n    assert len(sample_data) =..."
+    },
+    {
+      "category": "test_framework",
+      "sample_idx": 2,
+      "score": 0.5572609305381775,
+      "ml_score": 0.5572609305381775,
+      "pattern_matches": [],
+      "text_preview": "\ndef process_validated_input(data):\n    # Assertions for preconditions (development aid)\n    assert isinstance(data, dict), \"Input must be a dictionary\"\n    assert 'id' in data, \"Input must have 'id' ..."
+    },
+    {
+      "category": "complex_algorithms",
+      "sample_idx": 0,
+      "score": 0.5563228130340576,
+      "ml_score": 0.5563228130340576,
+      "pattern_matches": [],
+      "text_preview": "\ndef quicksort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x i..."
+    },
+    {
+      "category": "complex_algorithms",
+      "sample_idx": 1,
+      "score": 0.5727964639663696,
+      "ml_score": 0.5727964639663696,
+      "pattern_matches": [],
+      "text_preview": "\nimport numpy as np\n\ndef compute_eigenvalues(matrix):\n    eigenvalues, eigenvectors = np.linalg.eig(matrix)\n    # Return only real eigenvalues above threshold\n    real_eigenvalues = eigenvalues[np.isr..."
+    },
+    {
+      "category": "complex_algorithms",
+      "sample_idx": 2,
+      "score": 0.567721962928772,
+      "ml_score": 0.567721962928772,
+      "pattern_matches": [],
+      "text_preview": "\ndef longest_common_subsequence(s1, s2):\n    m, n = len(s1), len(s2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if s1[i..."
+    },
+    {
+      "category": "unusual_patterns",
+      "sample_idx": 0,
+      "score": 0.5575625002384186,
+      "ml_score": 0.5575625002384186,
+      "pattern_matches": [],
+      "text_preview": "\nclass SingletonMeta(type):\n    _instances = {}\n\n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            cls._instances[cls] = super().__call__(*args, **kwargs)\n     ..."
+    },
+    {
+      "category": "unusual_patterns",
+      "sample_idx": 1,
+      "score": 0.5600133240222931,
+      "ml_score": 0.5600133240222931,
+      "pattern_matches": [],
+      "text_preview": "\ndef memoize(func):\n    cache = {}\n    def wrapper(*args):\n        if args not in cache:\n            cache[args] = func(*args)\n        return cache[args]\n    return wrapper\n\n@memoize\ndef fibonacci(n):..."
+    },
+    {
+      "category": "unusual_patterns",
+      "sample_idx": 2,
+      "score": 0.5438517928123474,
+      "ml_score": 0.5438517928123474,
+      "pattern_matches": [],
+      "text_preview": "\nfrom contextlib import contextmanager\n\n@contextmanager\ndef temporary_file(content):\n    import tempfile\n    import os\n\n    fd, path = tempfile.mkstemp()\n    try:\n        with os.fdopen(fd, 'w') as f:..."
+    },
+    {
+      "category": "cli_tools",
+      "sample_idx": 0,
+      "score": 0.5430789291858673,
+      "ml_score": 0.5430789291858673,
+      "pattern_matches": [],
+      "text_preview": "\nimport argparse\nimport sys\n\ndef main():\n    parser = argparse.ArgumentParser(description='Process files')\n    parser.add_argument('input', help='Input file')\n    parser.add_argument('-o', '--output',..."
+    },
+    {
+      "category": "cli_tools",
+      "sample_idx": 1,
+      "score": 0.5568734407424927,
+      "ml_score": 0.5568734407424927,
+      "pattern_matches": [],
+      "text_preview": "\nimport click\n\n@click.command()\n@click.argument('name')\n@click.option('--count', default=1, help='Number of greetings')\ndef hello(name, count):\n    for _ in range(count):\n        click.echo(f'Hello, {..."
+    },
+    {
+      "category": "data_processing",
+      "sample_idx": 0,
+      "score": 0.5593421161174774,
+      "ml_score": 0.5593421161174774,
+      "pattern_matches": [],
+      "text_preview": "\nimport pandas as pd\n\ndef clean_data(df):\n    # Remove duplicates\n    df = df.drop_duplicates()\n\n    # Handle missing values\n    df = df.fillna(df.mean())\n\n    # Filter outliers\n    q1 = df['value'].q..."
+    },
+    {
+      "category": "data_processing",
+      "sample_idx": 1,
+      "score": 0.5580955147743225,
+      "ml_score": 0.5580955147743225,
+      "pattern_matches": [],
+      "text_preview": "\nimport json\nimport csv\n\ndef convert_json_to_csv(json_path, csv_path):\n    with open(json_path, 'r') as f:\n        data = json.load(f)\n\n    if not data:\n        return 0\n\n    with open(csv_path, 'w', ..."
+    }
+  ],
+  "interpretation": "POOR: FPR >= 20% - High false positive rate, needs improvement"
+}

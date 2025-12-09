@@ -1,0 +1,120 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# Models (large files)
+models/*.pt
+models/*.bin
+!models/.gitkeep
+
+# Training data (large files)
+data/real_trajectories/
+data/training/*.json
+!data/training/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temporary
+tmp/
+temp/
+
+# HuggingFace cache
+.cache/
+
+# LaTeX build files
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.synctex.gz
+paper/*.pdf
+
+# Release artifacts
+*.tar.gz
+*.whl
+
+# API keys (never commit)
+credentials.json
+*.pem
+*.key
+
+# Private documents (not for GitHub)
+private_docs/
+models/huggingface/
+*.safetensors
+models/huggingface/
+*.safetensors
+*.pt
+__pycache__/
+*.pyc
+.env
+.DS_Store
+README.md.backup
+README_OLD.md
+RELEASE_READY.json
+RELEASE_STEPS.md
+.claude/
+*.backup
+README.md.backup
+README_OLD.md
+RELEASE_READY.json
+RELEASE_STEPS.md
+.claude/
+*.backup
+docs/STATUS.md
+docs/RELEASE_CHECKLIST.md
+.DS_Store
+**/.DS_Store
+private_docs/
+
+# Backup and internal files (keep local, don't push)
+README.md.backup
+README_OLD.md
+RELEASE_READY.json
+RELEASE_STEPS.md
+docs/RELEASE_CHECKLIST.md
+docs/STATUS.md
+benchmark_results_expanded.json
+training.log
+full_training.log
+shade_download.log
+alerts.log
+api_alerts.log

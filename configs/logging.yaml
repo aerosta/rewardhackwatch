@@ -1,0 +1,82 @@
+# Logging Configuration
+# Configuration for logging system
+
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  standard:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+  detailed:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+  json:
+    class: "pythonjsonlogger.jsonlogger.JsonFormatter"
+    format: "%(asctime)s %(name)s %(levelname)s %(message)s"
+
+handlers:
+  console:
+    class: "logging.StreamHandler"
+    level: "DEBUG"
+    formatter: "standard"
+    stream: "ext://sys.stdout"
+
+  file:
+    class: "logging.handlers.RotatingFileHandler"
+    level: "INFO"
+    formatter: "detailed"
+    filename: "./logs/rewardhackwatch.log"
+    maxBytes: 10485760  # 10MB
+    backupCount: 5
+
+  error_file:
+    class: "logging.handlers.RotatingFileHandler"
+    level: "ERROR"
+    formatter: "detailed"
+    filename: "./logs/errors.log"
+    maxBytes: 10485760
+    backupCount: 10
+
+loggers:
+  rewardhackwatch:
+    level: "DEBUG"
+    handlers:
+      - console
+      - file
+      - error_file
+    propagate: false
+
+  rewardhackwatch.api:
+    level: "INFO"
+    handlers:
+      - console
+      - file
+    propagate: false
+
+  rewardhackwatch.detectors:
+    level: "DEBUG"
+    handlers:
+      - console
+      - file
+    propagate: false
+
+  rewardhackwatch.trackers:
+    level: "INFO"
+    handlers:
+      - console
+      - file
+    propagate: false
+
+  uvicorn:
+    level: "INFO"
+    handlers:
+      - console
+    propagate: false
+
+root:
+  level: "WARNING"
+  handlers:
+    - console

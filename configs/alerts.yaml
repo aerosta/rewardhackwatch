@@ -1,0 +1,85 @@
+# Alert Configuration
+# Configuration for alert system
+
+version: "1.0"
+name: "alerts"
+
+# Alert Thresholds
+thresholds:
+  hack_score:
+    warning: 0.5
+    critical: 0.8
+  rmgi:
+    warning: 0.6
+    critical: 0.75
+  drift:
+    warning: 0.3
+    critical: 0.5
+
+# Alert Channels
+channels:
+  console:
+    enabled: true
+    format: "text"
+    include_details: true
+
+  email:
+    enabled: false
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    smtp_user: "${SMTP_USER}"
+    smtp_password: "${SMTP_PASSWORD}"
+    from_address: "alerts@rewardhackwatch.local"
+    to_addresses:
+      - "team@example.com"
+    subject_prefix: "[RHW Alert]"
+
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#ai-safety-alerts"
+    username: "RewardHackWatch"
+    icon_emoji: ":warning:"
+
+  webhook:
+    enabled: false
+    url: "${ALERT_WEBHOOK_URL}"
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+    timeout: 10
+    retry_count: 3
+
+# Rate Limiting
+rate_limit:
+  enabled: true
+  max_alerts_per_minute: 10
+  cooldown_seconds: 60
+  deduplicate: true
+  deduplicate_window: 300
+
+# Alert Formatting
+formatting:
+  include_timestamp: true
+  include_trajectory_id: true
+  include_scores: true
+  include_recommendations: true
+  max_reasoning_length: 500
+
+# Alert Levels
+levels:
+  info:
+    color: "#3498db"
+    priority: 1
+  warning:
+    color: "#f39c12"
+    priority: 2
+  critical:
+    color: "#e74c3c"
+    priority: 3
+
+# Persistence
+persistence:
+  enabled: true
+  database_path: "./data/alerts.db"
+  retention_days: 30

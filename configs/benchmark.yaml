@@ -1,0 +1,57 @@
+# RewardHackWatch Benchmark Configuration
+# Configuration for running benchmarks
+
+version: "1.0"
+name: "benchmark"
+
+# Benchmark Settings
+benchmark:
+  datasets:
+    - name: "rhw_bench"
+      path: "./data/benchmarks/rhw_bench.json"
+      enabled: true
+    - name: "malt"
+      path: "./data/malt"
+      enabled: true
+      limit: 1000
+    - name: "evilgenie"
+      path: "./data/evilgenie"
+      enabled: false
+    - name: "shade"
+      path: "./data/shade"
+      enabled: false
+
+  output_dir: "./results/benchmarks"
+  save_predictions: true
+  save_errors: true
+
+# Detector Configuration
+detectors:
+  pattern:
+    enabled: true
+    sensitivity: 0.8
+
+  ast:
+    enabled: true
+    sensitivity: 0.7
+
+  ml:
+    enabled: true
+    model_path: "./models/distilbert"
+    threshold: 0.5
+
+# Evaluation Metrics
+metrics:
+  - accuracy
+  - precision
+  - recall
+  - f1
+  - auc_roc
+  - confusion_matrix
+
+# Reporting
+reporting:
+  format: "json"
+  include_examples: true
+  max_examples_per_class: 10
+  generate_plots: true

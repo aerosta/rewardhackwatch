@@ -1,0 +1,93 @@
+# Docker Configuration
+# Configuration for Docker deployment
+
+version: "1.0"
+name: "docker"
+
+# Base Image Configuration
+image:
+  base: "python:3.11-slim"
+  name: "rewardhackwatch"
+  tag: "latest"
+  registry: "ghcr.io/rewardhackwatch"
+
+# Build Configuration
+build:
+  context: "."
+  dockerfile: "Dockerfile"
+  args:
+    PYTHON_VERSION: "3.11"
+    POETRY_VERSION: "1.7.0"
+  cache_from:
+    - "rewardhackwatch:latest"
+
+# Container Configuration
+container:
+  name: "rhw-api"
+  hostname: "rewardhackwatch"
+  restart_policy: "unless-stopped"
+  user: "1000:1000"
+
+# Resource Limits
+resources:
+  cpu_limit: "2.0"
+  memory_limit: "4g"
+  cpu_reservation: "0.5"
+  memory_reservation: "1g"
+
+# Ports
+ports:
+  api: 8000
+  dashboard: 8501
+  metrics: 9090
+
+# Volumes
+volumes:
+  - source: "./models"
+    target: "/app/models"
+    read_only: true
+  - source: "./data"
+    target: "/app/data"
+  - source: "./logs"
+    target: "/app/logs"
+
+# Environment Variables
+environment:
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  LOG_LEVEL: "INFO"
+
+# Health Check
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8000/status"]
+  interval: "30s"
+  timeout: "10s"
+  retries: 3
+  start_period: "40s"
+
+# Network Configuration
+network:
+  name: "rhw-network"
+  driver: "bridge"
+
+# Compose Services
+services:
+  api:
+    image: "${REGISTRY}/rewardhackwatch:${TAG}"
+    ports:
+      - "8000:8000"
+    environment:
+      - CONFIG_PATH=/app/configs/production.yaml
+    depends_on:
+      - redis
+
+  dashboard:
+    image: "${REGISTRY}/rewardhackwatch:${TAG}"
+    command: "streamlit run dashboard/app.py"
+    ports:
+      - "8501:8501"
+
+  redis:
+    image: "redis:7-alpine"
+    ports:
+      - "6379:6379"

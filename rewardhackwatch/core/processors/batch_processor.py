@@ -1,5 +1,7 @@
 """Process batches of trajectories with parallelization."""
 
+from __future__ import annotations
+
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass

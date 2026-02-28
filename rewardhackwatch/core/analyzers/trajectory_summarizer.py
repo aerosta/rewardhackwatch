@@ -1,5 +1,7 @@
 """Summarize trajectory for analysis."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Optional
 

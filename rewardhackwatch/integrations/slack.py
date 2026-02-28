@@ -1,5 +1,7 @@
 """Slack integration for alerts."""
 
+from __future__ import annotations
+
 from typing import Any, Optional
 
 from .webhook import WebhookNotifier

@@ -1,5 +1,7 @@
 """Retry utilities for API calls."""
 
+from __future__ import annotations
+
 import functools
 import time
 from typing import Callable, Optional, TypeVar

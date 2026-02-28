@@ -1,5 +1,7 @@
 """Discord integration for alerts."""
 
+from __future__ import annotations
+
 from typing import Any
 
 from .webhook import WebhookNotifier

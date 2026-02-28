@@ -1,5 +1,7 @@
 """Metrics calculation utilities."""
 
+from __future__ import annotations
+
 
 def precision(tp: int, fp: int) -> float:
     """Calculate precision."""

@@ -13,6 +13,8 @@ Expected realistic performance:
 - External: 55-75%
 """
 
+from __future__ import annotations
+
 import json
 import random
 import time

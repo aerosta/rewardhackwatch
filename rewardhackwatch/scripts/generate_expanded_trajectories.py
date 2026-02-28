@@ -8,6 +8,8 @@ Target: 500-1000 trajectories with:
 - More clean examples for balance
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import random

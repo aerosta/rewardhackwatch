@@ -11,6 +11,8 @@ Compares:
 Measures: Precision, Recall, F1, RMGI accuracy, Latency
 """
 
+from __future__ import annotations
+
 import json
 import time
 from dataclasses import dataclass, field

@@ -1,5 +1,7 @@
 """Constants and configuration values."""
 
+from __future__ import annotations
+
 # Risk level thresholds
 RISK_THRESHOLDS = {
     "critical": 0.8,

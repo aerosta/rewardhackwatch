@@ -1,5 +1,7 @@
 """Pattern-based detector for reward hacking and misalignment signals."""
 
+from __future__ import annotations
+
 import re
 from typing import Any, Optional, Union
 

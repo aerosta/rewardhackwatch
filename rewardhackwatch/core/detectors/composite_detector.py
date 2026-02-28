@@ -1,5 +1,7 @@
 """Composite detector combining multiple detection methods."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any, Optional
 

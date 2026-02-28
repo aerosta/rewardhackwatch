@@ -1,5 +1,7 @@
 """Real-time monitoring for live agent sessions."""
 
+from __future__ import annotations
+
 import queue
 import threading
 from dataclasses import dataclass, field

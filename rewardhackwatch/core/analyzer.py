@@ -4,7 +4,9 @@ This module provides the TrajectoryAnalyzer class for analyzing LLM agent
 trajectories for reward hacking behaviors.
 """
 
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from typing import Any
 
 from .detectors.ml_detector import MLDetector
@@ -29,6 +31,11 @@ class AnalysisResult:
             self.patterns = [m.get("pattern", "") for m in self.pattern_matches]
         if self.suspicious_nodes is None:
             self.suspicious_nodes = []
+
+    @property
+    def detections(self) -> list[dict[str, Any]]:
+        """Alias for pattern_matches (used in README Quick Start)."""
+        return self.pattern_matches
 
 
 class TrajectoryAnalyzer:

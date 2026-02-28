@@ -6,6 +6,8 @@ into broader misalignment patterns. Based on Anthropic's Nov 2025 finding
 that reward hacking generalizes to alignment faking and sabotage.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
 

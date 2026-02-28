@@ -5,6 +5,57 @@ All notable changes to RewardHackWatch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-02-28
+
+### Added
+
+#### Public API
+- `RewardHackDetector` high-level facade class matching README Quick Start examples
+- `AnalysisResult.detections` property (alias for `pattern_matches`)
+- `RewardHackDetector.calibrate_threshold()` for dynamic threshold calibration
+- `ThresholdCalibrator` with percentile, isotonic, and beta calibration methods
+- `rewardhackwatch calibrate` CLI command for threshold calibration on clean data
+
+#### Synthetic Data & Benchmarks
+- `MockExploitGenerator` with 8 code templates for mock/monkeypatch exploits
+- `CleanTrajectoryGenerator` for balanced dataset creation
+- `HackBenchDataset` standardized benchmark (4,300+ trajectories, 9 categories)
+- `scripts/generate_synthetic_data.py` and `scripts/build_hackbench.py`
+
+#### Temporal Modeling
+- `StepLevelFeatureExtractor` for per-step feature extraction
+- `StepSequenceDataset` with padding and attention masks
+- `TemporalTrainer` training pipeline for `AttentionClassifier`
+- Positional encoding in `AttentionClassifier` for step ordering
+
+#### Research Tools
+- `TransferStudyRunner` for cross-model transfer matrix experiments
+- `EvasionAttackSuite` with 5 adversarial attack types
+- `CausalRMGI` with Granger causality testing and intervention analysis
+- `scripts/run_transfer_study.py` and `scripts/run_evasion_tests.py`
+
+#### Dashboard
+- Dark-mode developer tool UI (#1a1a2e theme)
+- Stat cards with accent-colored borders
+- Donut charts for category distribution
+- Per-category F1 bar charts
+- Cross-Model comparison tab
+- Recent Analysis table
+- Quick Analysis as default landing tab
+- PDF and JSON export buttons
+
+### Fixed
+- `__version__` was "0.1.0" instead of matching pyproject.toml
+- `__author__` was "Your Name" instead of "Aerosta Research"
+- `RewardHackDetector` class referenced in README didn't exist
+- `result.detections` referenced in Quick Start didn't exist
+- Python 3.9 compatibility: added `from __future__ import annotations` to 52 files
+- Missing `[dashboard]` optional dependency group in pyproject.toml
+
+### Changed
+- Version bumped to 1.2.0
+- Development status upgraded from Alpha to Beta
+
 ## [1.0.0] - 2025-12-06
 
 ### Added

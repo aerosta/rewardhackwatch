@@ -1,5 +1,7 @@
 """Text processing utilities for trajectory analysis."""
 
+from __future__ import annotations
+
 import re
 
 

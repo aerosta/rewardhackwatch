@@ -11,6 +11,8 @@ Key insight: A model that finds a "solution" with minimal reasoning but
 achieves high reward is likely gaming the metric rather than solving the task.
 """
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass, field
 from typing import Any

@@ -8,6 +8,8 @@ objections to their behavior.
 Example: "I know this might seem like I'm cheating, but actually..."
 """
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass
 from typing import Any

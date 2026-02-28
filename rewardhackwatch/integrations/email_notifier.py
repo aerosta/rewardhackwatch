@@ -1,5 +1,7 @@
 """Email integration for alerts."""
 
+from __future__ import annotations
+
 import smtplib
 from dataclasses import dataclass
 from email.mime.multipart import MIMEMultipart

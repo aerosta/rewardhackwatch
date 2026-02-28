@@ -7,6 +7,8 @@ Combines Claude and Llama verdicts using configurable strategies:
 - Escalation to more capable model when uncertain
 """
 
+from __future__ import annotations
+
 import asyncio
 from dataclasses import dataclass, field
 from typing import Any

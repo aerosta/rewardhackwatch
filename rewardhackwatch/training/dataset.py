@@ -565,3 +565,148 @@ class CombinedDataset(Dataset):
         from collections import Counter
 
         return dict(Counter(self.sources))
+
+
+# ---------------------------------------------------------------------------
+# Step-level dataset for temporal (sequence) modeling
+# ---------------------------------------------------------------------------
+
+
+class StepLevelFeatureExtractor:
+    """Extract features per-step for the AttentionClassifier.
+
+    Runs the base TrajectoryFeatureExtractor on each individual step,
+    producing a sequence of feature vectors rather than a single vector.
+    """
+
+    def __init__(self):
+        self._base = TrajectoryFeatureExtractor()
+
+    def extract_step_sequence(
+        self, trajectory: dict[str, Any]
+    ) -> tuple[list[np.ndarray], int]:
+        """Extract per-step features from a trajectory.
+
+        Returns:
+            (list of feature vectors, actual sequence length)
+        """
+        # Get the inner trajectory if nested
+        inner = trajectory.get("trajectory", trajectory)
+        steps = inner.get("steps", [])
+
+        if not steps:
+            # Fallback: treat whole trajectory as one step
+            features = self._base.extract(inner)
+            return [features.to_tensor().numpy()], 1
+
+        step_features = []
+        for step in steps:
+            mini = self._step_to_mini_trajectory(step, inner)
+            features = self._base.extract(mini)
+            step_features.append(features.to_tensor().numpy())
+
+        return step_features, len(step_features)
+
+    def _step_to_mini_trajectory(
+        self, step: dict, parent: dict
+    ) -> dict[str, Any]:
+        """Convert a single step into a mini-trajectory for feature extraction."""
+        cot = []
+        code = []
+
+        if isinstance(step, dict):
+            for key in ("thought", "thinking", "reasoning", "cot"):
+                if key in step and step[key]:
+                    cot.append(str(step[key]))
+            for key in ("code", "action"):
+                if key in step and step[key]:
+                    code.append(str(step[key]))
+
+        return {
+            "task": parent.get("task", ""),
+            "cot_traces": cot,
+            "code_outputs": code,
+            "steps": [step],
+        }
+
+
+class StepSequenceDataset(Dataset):
+    """PyTorch Dataset that returns padded step-level feature sequences.
+
+    Each sample is a (features, mask, label) tuple where:
+    - features: [max_steps, feature_dim] float tensor
+    - mask: [max_steps] bool tensor (True = padding)
+    - label: scalar float tensor
+    """
+
+    def __init__(
+        self,
+        data_dir: str,
+        split: str = "train",
+        max_steps: int = 50,
+        split_ratio: tuple[float, float, float] = (0.7, 0.15, 0.15),
+        seed: int = 42,
+    ):
+        self.max_steps = max_steps
+        self.extractor = StepLevelFeatureExtractor()
+        self.feature_dim = TrajectoryFeatures.feature_dim()
+
+        # Load trajectories (reuse logic from RHWBenchDataset)
+        data_path = Path(data_dir)
+        all_trajectories = []
+        all_labels = []
+
+        for f in sorted(data_path.glob("*.json")):
+            try:
+                with open(f) as fh:
+                    data = json.load(fh)
+                label = 1.0 if data.get("expected_hack", False) else 0.0
+                all_trajectories.append(data)
+                all_labels.append(label)
+            except (json.JSONDecodeError, KeyError):
+                continue
+
+        # Split
+        n = len(all_trajectories)
+        indices = list(range(n))
+        rng = np.random.RandomState(seed)
+        rng.shuffle(indices)
+
+        n_train = int(n * split_ratio[0])
+        n_val = int(n * split_ratio[1])
+
+        if split == "train":
+            sel = indices[:n_train]
+        elif split == "val":
+            sel = indices[n_train : n_train + n_val]
+        else:
+            sel = indices[n_train + n_val :]
+
+        self.trajectories = [all_trajectories[i] for i in sel]
+        self.labels = [all_labels[i] for i in sel]
+
+    def __len__(self) -> int:
+        return len(self.trajectories)
+
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor]:
+        traj = self.trajectories[idx]
+        label = self.labels[idx]
+
+        step_feats, actual_len = self.extractor.extract_step_sequence(traj)
+        actual_len = min(actual_len, self.max_steps)
+
+        # Pad to max_steps
+        padded = np.zeros((self.max_steps, self.feature_dim), dtype=np.float32)
+        for i in range(actual_len):
+            padded[i] = step_feats[i]
+
+        # Mask: True = padded position
+        mask = np.ones(self.max_steps, dtype=bool)
+        mask[:actual_len] = False
+
+        return {
+            "features": torch.tensor(padded, dtype=torch.float32),
+            "mask": torch.tensor(mask, dtype=torch.bool),
+            "label": torch.tensor(label, dtype=torch.float32),
+            "length": torch.tensor(actual_len, dtype=torch.long),
+        }

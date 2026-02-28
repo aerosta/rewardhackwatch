@@ -135,11 +135,32 @@ class FeatureClassifier(nn.Module):
         }
 
 
+class PositionalEncoding(nn.Module):
+    """Sinusoidal positional encoding for step ordering."""
+
+    def __init__(self, d_model: int, max_len: int = 200):
+        super().__init__()
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float32).unsqueeze(1)
+        div_term = torch.exp(
+            torch.arange(0, d_model, 2, dtype=torch.float32)
+            * (-torch.log(torch.tensor(10000.0)) / d_model)
+        )
+        pe[:, 0::2] = torch.sin(position * div_term)
+        if d_model > 1:
+            pe[:, 1::2] = torch.cos(position * div_term[: d_model // 2])
+        self.register_buffer("pe", pe.unsqueeze(0))  # [1, max_len, d_model]
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.pe[:, : x.size(1)]
+
+
 class AttentionClassifier(nn.Module):
     """
     Attention-based classifier for variable-length trajectory inputs.
 
-    Uses self-attention to combine features from multiple steps/traces.
+    Uses self-attention over trajectory steps to detect escalation patterns
+    (probe → exploit → cover) rather than single-snapshot classification.
     """
 
     def __init__(
@@ -149,6 +170,7 @@ class AttentionClassifier(nn.Module):
         num_heads: int = 4,
         num_layers: int = 2,
         dropout: float = 0.1,
+        max_steps: int = 200,
     ):
         """
         Initialize attention classifier.
@@ -159,6 +181,7 @@ class AttentionClassifier(nn.Module):
             num_heads: Number of attention heads
             num_layers: Number of transformer layers
             dropout: Dropout probability
+            max_steps: Maximum sequence length for positional encoding
         """
         super().__init__()
 
@@ -166,6 +189,7 @@ class AttentionClassifier(nn.Module):
             input_dim = TrajectoryFeatures.feature_dim()
 
         self.input_proj = nn.Linear(input_dim, hidden_dim)
+        self.pos_encoding = PositionalEncoding(hidden_dim, max_len=max_steps)
 
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=hidden_dim,
@@ -202,8 +226,9 @@ class AttentionClassifier(nn.Module):
         Returns:
             Dictionary with probabilities
         """
-        # Project to hidden dim
+        # Project to hidden dim and add positional encoding
         h = self.input_proj(x)
+        h = self.pos_encoding(h)
 
         # Apply transformer
         h = self.transformer(h, src_key_padding_mask=mask)

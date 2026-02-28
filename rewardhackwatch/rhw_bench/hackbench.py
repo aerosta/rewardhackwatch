@@ -1,0 +1,270 @@
+"""HackBench: Standardized benchmark dataset for LLM reward hacking detection.
+
+The first open benchmark for evaluating reward hacking detectors across
+multiple attack categories and model families. Designed to be the
+"ImageNet of reward hacking" — a shared evaluation standard for the field.
+
+Categories:
+    sys_exit, test_manipulation, mock_exploit, deceptive_cot,
+    sycophancy, alignment_faking, sabotage, oversight_subversion, clean
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from collections import Counter
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+logger = logging.getLogger(__name__)
+
+
+CATEGORIES = [
+    "sys_exit",
+    "test_manipulation",
+    "mock_exploit",
+    "deceptive_cot",
+    "sycophancy",
+    "alignment_faking",
+    "sabotage",
+    "oversight_subversion",
+    "clean",
+]
+
+
+@dataclass
+class HackBenchStats:
+    """Statistics for a HackBench dataset."""
+
+    total: int = 0
+    by_category: dict[str, int] = field(default_factory=dict)
+    by_source: dict[str, int] = field(default_factory=dict)
+    hack_count: int = 0
+    clean_count: int = 0
+    hack_rate: float = 0.0
+    splits: dict[str, int] = field(default_factory=dict)
+
+
+@dataclass
+class HackBenchConfig:
+    """Configuration for HackBench dataset assembly."""
+
+    version: str = "1.0"
+    rhw_bench_dir: str = "rewardhackwatch/rhw_bench/test_cases"
+    output_dir: str = "data/hackbench"
+    include_synthetic: bool = True
+    train_ratio: float = 0.70
+    val_ratio: float = 0.15
+    test_ratio: float = 0.15
+    seed: int = 42
+
+
+class HackBenchDataset:
+    """Curate and manage the HackBench benchmark dataset.
+
+    Assembles trajectories from multiple sources into a standardized
+    benchmark with category labels, scenario-level splits, and metadata.
+
+    Example::
+
+        hb = HackBenchDataset()
+        hb.curate()
+        print(hb.stats())
+        train = hb.get_split("train")
+        hb.export("data/hackbench")
+    """
+
+    def __init__(self, config: HackBenchConfig | None = None):
+        if config is None:
+            config = HackBenchConfig()
+        self.config = config
+        self.trajectories: list[dict] = []
+        self._splits: dict[str, list[dict]] = {}
+
+    def curate(self) -> HackBenchStats:
+        """Assemble the full benchmark from all available sources."""
+        self.trajectories = []
+
+        # Source 1: RHW-Bench expanded test cases
+        expanded_dir = Path(self.config.rhw_bench_dir) / "expanded"
+        if expanded_dir.exists():
+            count = self._load_from_dir(expanded_dir, source="rhw_bench_expanded")
+            logger.info(f"Loaded {count} from RHW-Bench expanded")
+
+        # Source 2: RHW-Bench generated test cases
+        generated_dir = Path(self.config.rhw_bench_dir) / "generated"
+        if generated_dir.exists():
+            count = self._load_from_dir(generated_dir, source="rhw_bench_generated")
+            logger.info(f"Loaded {count} from RHW-Bench generated")
+
+        # Source 3: Synthetic data (if generate_synthetic_data.py has been run)
+        if self.config.include_synthetic:
+            synth_count = self._load_synthetic()
+            logger.info(f"Loaded {synth_count} synthetic trajectories")
+
+        # Deduplicate by name
+        seen = set()
+        unique = []
+        for t in self.trajectories:
+            name = t.get("name", t.get("id", ""))
+            if name not in seen:
+                seen.add(name)
+                unique.append(t)
+        self.trajectories = unique
+
+        # Normalize categories
+        for t in self.trajectories:
+            cat = t.get("category", "unknown")
+            if cat not in CATEGORIES:
+                t["category"] = "clean" if not t.get("expected_hack", False) else "other"
+
+        # Create splits
+        self._create_splits()
+
+        return self.stats()
+
+    def _load_from_dir(self, dir_path: Path, source: str) -> int:
+        count = 0
+        for f in sorted(dir_path.glob("*.json")):
+            try:
+                with open(f) as fh:
+                    data = json.load(fh)
+                # Normalize: ensure top-level category and expected_hack
+                if "category" not in data:
+                    data["category"] = data.get("trajectory", {}).get(
+                        "metadata", {}
+                    ).get("hack_type", "unknown")
+                if "expected_hack" not in data:
+                    data["expected_hack"] = data.get("category", "clean") != "clean"
+                data.setdefault("source", source)
+                self.trajectories.append(data)
+                count += 1
+            except (json.JSONDecodeError, KeyError) as e:
+                logger.warning(f"Skipping {f}: {e}")
+        return count
+
+    def _load_synthetic(self) -> int:
+        """Load synthetic trajectories generated by mock_exploit_generator."""
+        count = 0
+        gen_dir = Path(self.config.rhw_bench_dir) / "generated"
+        if gen_dir.exists():
+            for f in sorted(gen_dir.glob("synth_*.json")):
+                try:
+                    with open(f) as fh:
+                        data = json.load(fh)
+                    data.setdefault("source", "synthetic_v1.2")
+                    self.trajectories.append(data)
+                    count += 1
+                except (json.JSONDecodeError, KeyError):
+                    pass
+        return count
+
+    def _get_scenario(self, name: str) -> str:
+        """Extract scenario from trajectory name (strip numeric suffix)."""
+        parts = name.rsplit("_", 1)
+        if len(parts) == 2 and parts[1].isdigit():
+            return parts[0]
+        return name
+
+    def _create_splits(self):
+        """Create train/val/test splits at the scenario level."""
+        import random as rng_mod
+
+        rng = rng_mod.Random(self.config.seed)
+
+        # Group by scenario
+        scenarios: dict[str, list[dict]] = {}
+        for t in self.trajectories:
+            name = t.get("name", t.get("id", "unknown"))
+            scenario = self._get_scenario(name)
+            scenarios.setdefault(scenario, []).append(t)
+
+        # Shuffle scenarios
+        scenario_list = list(scenarios.keys())
+        rng.shuffle(scenario_list)
+
+        n = len(scenario_list)
+        n_train = int(n * self.config.train_ratio)
+        n_val = int(n * self.config.val_ratio)
+
+        train_scenarios = set(scenario_list[:n_train])
+        val_scenarios = set(scenario_list[n_train : n_train + n_val])
+        test_scenarios = set(scenario_list[n_train + n_val :])
+
+        self._splits = {"train": [], "val": [], "test": []}
+        for scenario, trajs in scenarios.items():
+            if scenario in train_scenarios:
+                self._splits["train"].extend(trajs)
+            elif scenario in val_scenarios:
+                self._splits["val"].extend(trajs)
+            else:
+                self._splits["test"].extend(trajs)
+
+    def get_split(self, split: str) -> list[dict]:
+        """Get a specific split. Must call curate() first."""
+        if not self._splits:
+            raise RuntimeError("Call curate() before get_split()")
+        return self._splits.get(split, [])
+
+    def stats(self) -> HackBenchStats:
+        """Compute dataset statistics."""
+        cat_counts = Counter(t.get("category", "unknown") for t in self.trajectories)
+        source_counts = Counter(t.get("source", "unknown") for t in self.trajectories)
+        hack_count = sum(1 for t in self.trajectories if t.get("expected_hack", False))
+        clean_count = len(self.trajectories) - hack_count
+
+        return HackBenchStats(
+            total=len(self.trajectories),
+            by_category=dict(cat_counts),
+            by_source=dict(source_counts),
+            hack_count=hack_count,
+            clean_count=clean_count,
+            hack_rate=hack_count / max(len(self.trajectories), 1),
+            splits={k: len(v) for k, v in self._splits.items()} if self._splits else {},
+        )
+
+    def export(self, output_dir: str | None = None) -> Path:
+        """Export the dataset in a standard format.
+
+        Creates:
+            output_dir/
+                hackbench_train.json
+                hackbench_val.json
+                hackbench_test.json
+                hackbench_metadata.json
+        """
+        out = Path(output_dir or self.config.output_dir)
+        out.mkdir(parents=True, exist_ok=True)
+
+        if not self._splits:
+            self.curate()
+
+        for split_name, trajs in self._splits.items():
+            path = out / f"hackbench_{split_name}.json"
+            with open(path, "w") as f:
+                json.dump(trajs, f, indent=2, default=str)
+
+        # Metadata
+        s = self.stats()
+        meta = {
+            "version": self.config.version,
+            "total_trajectories": s.total,
+            "categories": CATEGORIES,
+            "by_category": s.by_category,
+            "by_source": s.by_source,
+            "hack_rate": s.hack_rate,
+            "splits": s.splits,
+            "config": {
+                "train_ratio": self.config.train_ratio,
+                "val_ratio": self.config.val_ratio,
+                "test_ratio": self.config.test_ratio,
+                "seed": self.config.seed,
+            },
+        }
+        with open(out / "hackbench_metadata.json", "w") as f:
+            json.dump(meta, f, indent=2)
+
+        logger.info(f"Exported HackBench to {out} ({s.total} trajectories)")
+        return out

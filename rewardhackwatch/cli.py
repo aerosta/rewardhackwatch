@@ -343,6 +343,108 @@ def dashboard():
 
 
 @app.command()
+def calibrate(
+    clean_dir: Path = typer.Argument(..., help="Directory of clean trajectory JSON files"),
+    percentile: float = typer.Option(99.0, "--percentile", "-p", help="Percentile threshold"),
+    method: str = typer.Option("percentile", "--method", "-m", help="Method: percentile or mean_std"),
+    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Save calibration result"),
+):
+    """
+    Calibrate detection threshold on clean reference data.
+    """
+    from rewardhackwatch.core.analyzer import TrajectoryAnalyzer
+    from rewardhackwatch.core.calibration import ThresholdCalibrator
+
+    console.print(
+        Panel.fit(
+            "[bold blue]RewardHackWatch[/bold blue] - Threshold Calibration",
+            subtitle=f"Clean data: {clean_dir}",
+        )
+    )
+
+    if not clean_dir.exists():
+        console.print(f"[red]Error: Directory not found: {clean_dir}[/red]")
+        raise typer.Exit(1)
+
+    # Load clean trajectories
+    files = list(clean_dir.glob("*.json"))
+    if not files:
+        console.print("[yellow]No JSON files found in directory[/yellow]")
+        raise typer.Exit(1)
+
+    console.print(f"Found {len(files)} clean trajectories")
+
+    clean_data = []
+    for f in files:
+        clean_data.append(load_trajectory(f))
+
+    # Calibrate
+    analyzer = TrajectoryAnalyzer()
+    calibrator = ThresholdCalibrator(analyzer)
+    result = calibrator.full_calibration(clean_data, percentile=percentile)
+
+    # Display
+    table = Table(title="Calibration Results", show_header=True)
+    table.add_column("Metric", style="cyan")
+    table.add_column("Value", justify="right")
+
+    table.add_row("New Threshold", f"[bold]{result.threshold:.6f}[/bold]")
+    table.add_row("Method", result.method)
+    table.add_row("Percentile", f"{result.percentile}")
+    table.add_row("Samples", str(result.n_samples))
+    table.add_row("Score Mean", f"{result.score_mean:.6f}")
+    table.add_row("Score Std", f"{result.score_std:.6f}")
+    table.add_row("Score Max", f"{result.score_max:.6f}")
+    table.add_row("Score P95", f"{result.score_p95:.6f}")
+    table.add_row("Score P99", f"{result.score_p99:.6f}")
+
+    console.print(table)
+
+    if output:
+        import json as json_mod
+
+        with open(output, "w") as f:
+            json_mod.dump(
+                {
+                    "threshold": result.threshold,
+                    "method": result.method,
+                    "percentile": result.percentile,
+                    "n_samples": result.n_samples,
+                    "score_mean": result.score_mean,
+                    "score_std": result.score_std,
+                    "score_max": result.score_max,
+                },
+                f,
+                indent=2,
+            )
+        console.print(f"\n[green]Calibration saved to: {output}[/green]")
+
+
+@app.command()
+def serve(
+    port: int = typer.Option(8000, "--port", help="Port to listen on"),
+    host: str = typer.Option("0.0.0.0", "--host", help="Host to bind to"),
+):
+    """
+    Start the FastAPI monitoring server.
+    """
+    import subprocess
+    import sys
+
+    api_path = Path(__file__).parent / "api" / "main.py"
+
+    if not api_path.exists():
+        console.print("[red]API module not found.[/red]")
+        raise typer.Exit(1)
+
+    console.print(f"[bold blue]Starting RewardHackWatch API on {host}:{port}[/bold blue]")
+    subprocess.run(
+        [sys.executable, "-m", "uvicorn", "rewardhackwatch.api.main:app",
+         "--host", host, "--port", str(port)]
+    )
+
+
+@app.command()
 def version():
     """Show version information."""
     from rewardhackwatch import __version__

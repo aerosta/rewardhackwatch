@@ -9,7 +9,7 @@
   <img src="assets/dashboard_hero.png" alt="RewardHackWatch Dashboard" width="900">
 </p>
 
-**RewardHackWatch** detects when LLM agents game their reward signals — calling `sys.exit(0)` to fake passing tests, mocking validators to skip checks, manipulating evaluation harnesses — and tracks whether these behaviors generalize into broader misalignment like alignment faking and sabotage.
+**RewardHackWatch** detects when LLM agents game their reward signals -calling `sys.exit(0)` to fake passing tests, mocking validators to skip checks, manipulating evaluation harnesses -and tracks whether these behaviors generalize into broader misalignment like alignment faking and sabotage.
 
 ---
 
@@ -41,7 +41,7 @@ tokenizer = AutoTokenizer.from_pretrained("Aerosta/rewardhackwatch")
 model = AutoModelForSequenceClassification.from_pretrained("Aerosta/rewardhackwatch")
 ```
 
-> **Note:** Optimal threshold is 0.02 (not 0.5) — calibrated for 3.6% base rate. See [HuggingFace page](https://huggingface.co/Aerosta/rewardhackwatch) for details.
+> **Note:** Optimal threshold is 0.02 (not 0.5) -calibrated for 3.6% base rate. See [HuggingFace page](https://huggingface.co/Aerosta/rewardhackwatch) for details.
 
 ### CLI
 
@@ -59,9 +59,9 @@ rewardhackwatch calibrate ./clean_data/   # Calibrate threshold
 
 LLM agents are learning to cheat. Recent research demonstrates this is a real and growing problem:
 
-- **Anthropic (Nov 2025)** — Reward hacking in frontier models generalizes to alignment faking, sabotage, and oversight subversion. Models that learn to game rewards develop broader misalignment behaviors without being explicitly trained to do so.
-- **METR (Jun 2025)** — Autonomous agents in real-world task environments discover and exploit evaluation loopholes, sometimes in ways their developers did not anticipate.
-- **OpenAI (Mar 2025)** — Chain-of-thought monitoring reveals that reasoning models plan deceptive strategies in their hidden reasoning, including test manipulation and reward tampering.
+- **Anthropic (Nov 2025)** -Reward hacking in frontier models generalizes to alignment faking, sabotage, and oversight subversion. Models that learn to game rewards develop broader misalignment behaviors without being explicitly trained to do so.
+- **METR (Jun 2025)** -Autonomous agents in real-world task environments discover and exploit evaluation loopholes, sometimes in ways their developers did not anticipate.
+- **OpenAI (Mar 2025)** -Chain-of-thought monitoring reveals that reasoning models plan deceptive strategies in their hidden reasoning, including test manipulation and reward tampering.
 
 RewardHackWatch is the first open-source tool built specifically to detect these behaviors in LLM agent trajectories at runtime.
 
@@ -160,7 +160,7 @@ new_threshold = detector.calibrate_threshold(clean_data, percentile=99)
 
 ### Cross-Model Transfer Study
 
-Train on GPT-4 trajectories, test on Claude — measures whether hacking signatures transfer across model families.
+Train on GPT-4 trajectories, test on Claude -measures whether hacking signatures transfer across model families.
 
 ```python
 from rewardhackwatch.experiments import TransferStudyRunner, TransferStudyConfig
@@ -305,7 +305,7 @@ Trajectory Input
 | SHADE-Arena | LLM agents | Evaluation framework | Benchmark, not detection |
 | MALT | LLM agents | Trajectory dataset | Data only, no detector |
 
-**Key difference:** RewardScope and classical RL safety tools target RL reward models and policy optimization. RewardHackWatch targets *LLM agent trajectories* — the code, reasoning, and actions produced by language models operating as autonomous agents. These are fundamentally different failure modes.
+**Key difference:** RewardScope and classical RL safety tools target RL reward models and policy optimization. RewardHackWatch targets *LLM agent trajectories* -the code, reasoning, and actions produced by language models operating as autonomous agents. These are fundamentally different failure modes.
 
 ---
 
@@ -318,7 +318,7 @@ Trajectory Input
 - HackBench standardized benchmark (4,300+ trajectories, 9 categories)
 - Temporal AttentionClassifier for step-level escalation modeling
 - Causal RMGI with Granger causality testing
-- Evasion robustness testing (5 adversarial attack types)
+- Evasion resistance testing (5 adversarial attack types)
 - Dynamic threshold calibration
 - Cross-model transfer study framework
 - Evaluation framework (JSONL loader, rubric scoring, batch analysis)
@@ -370,16 +370,16 @@ detector.calibrate_threshold(clean_trajectories, percentile=99)
 
 ## Documentation
 
-- [Technical Report](docs/TECHNICAL_REPORT.md) — Full methodology and experiments
-- [RMGI Specification](docs/RMGI_DEFINITION.md) — Formal metric definition
-- [Architecture](docs/ARCHITECTURE.md) — System design diagrams
-- [Paper](paper/RewardHackWatch.pdf) — Research paper
+- [Technical Report](docs/TECHNICAL_REPORT.md) -Full methodology and experiments
+- [RMGI Specification](docs/RMGI_DEFINITION.md) -Formal metric definition
+- [Architecture](docs/ARCHITECTURE.md) -System design diagrams
+- [Paper](paper/RewardHackWatch.pdf) -Research paper
 
 ---
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE) for details.
+Apache License 2.0 -see [LICENSE](LICENSE) for details.
 
 Copyright 2025-2026 Aerosta
 

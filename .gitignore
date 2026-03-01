@@ -101,6 +101,10 @@ shade_download.log
 alerts.log
 api_alerts.log
 
+# Frontend
+node_modules/
+frontend/dist/
+
 # Project planning docs
 *_PLAN.md
 *_plan.md

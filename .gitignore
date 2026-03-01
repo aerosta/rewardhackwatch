@@ -117,3 +117,7 @@ forge_*.md
 rhw_improve_promote_plan.md
 RewardHackWatch_MASTER_PLAN.md
 assets/screenshots/archive/
+PROMOTION_CHECKLIST.md
+TESTING_CHECKLIST.md
+frontend/public/test-data.jsonl
+frontend/dist/test-data.jsonl

@@ -1,7 +1,7 @@
 # Your LLM is cheating on its tests. This tool catches it.
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)]()
 [![F1 Score](https://img.shields.io/badge/F1-89.7%25-success.svg)]()
 
@@ -379,9 +379,9 @@ detector.calibrate_threshold(clean_trajectories, percentile=99)
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+Apache License 2.0 — see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025 Aerosta Research
+Copyright 2025-2026 Aerosta Research
 
 ---
 

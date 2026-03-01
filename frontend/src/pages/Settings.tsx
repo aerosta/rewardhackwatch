@@ -212,7 +212,7 @@ export default function Settings() {
         </div>
         <div className="space-y-1 text-sm text-text-secondary">
           <p><span className="text-text-muted">Version:</span> 1.2.0</p>
-          <p><span className="text-text-muted">License:</span> MIT</p>
+          <p><span className="text-text-muted">License:</span> Apache 2.0</p>
           <p><span className="text-text-muted">Author:</span> Aerosta Research</p>
         </div>
       </div>

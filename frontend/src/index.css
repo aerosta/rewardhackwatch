@@ -71,6 +71,11 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Heading font for titles and numbers */
+.font-heading {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
 /* Monospace for IDs and code */
 pre, code, .font-mono {
   font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;

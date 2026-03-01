@@ -51,7 +51,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <div className="text-[13px] font-bold text-text-primary leading-tight tracking-tight">RewardHackWatch</div>
+            <div className="text-[13px] font-bold text-text-primary leading-tight tracking-tight font-heading">RewardHackWatch</div>
           </div>
         )}
       </div>

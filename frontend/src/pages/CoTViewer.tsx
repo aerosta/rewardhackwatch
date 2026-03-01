@@ -44,19 +44,19 @@ export default function CoTViewer() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Total Steps</p>
-          <p className="text-[28px] font-bold text-text-primary leading-none mt-2 tabular-nums">{steps.length}</p>
+          <p className="text-[28px] font-bold font-heading text-text-primary leading-none mt-2 tabular-nums">{steps.length}</p>
         </div>
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Suspicious</p>
-          <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">{suspiciousCount}</p>
+          <p className="text-[28px] font-bold font-heading text-risk-critical leading-none mt-2 tabular-nums">{suspiciousCount}</p>
         </div>
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Peak Score</p>
-          <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">{peakScore.toFixed(2)}</p>
+          <p className="text-[28px] font-bold font-heading text-risk-critical leading-none mt-2 tabular-nums">{peakScore.toFixed(2)}</p>
         </div>
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Escalation At</p>
-          <p className="text-[28px] font-bold text-risk-medium leading-none mt-2 tabular-nums">
+          <p className="text-[28px] font-bold font-heading text-risk-medium leading-none mt-2 tabular-nums">
             {escalationPoint >= 0 ? `Step ${escalationPoint + 1}` : 'None'}
           </p>
         </div>

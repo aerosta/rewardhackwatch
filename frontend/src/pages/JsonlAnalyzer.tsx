@@ -986,21 +986,21 @@ export default function JsonlAnalyzer() {
               {/* Summary cards */}
               <div className="grid grid-cols-4 gap-4">
                 <div className="card text-center py-5">
-                  <p className="text-2xl font-bold tabular-nums text-text-primary">{summary.total_entries}</p>
+                  <p className="text-2xl font-bold font-heading tabular-nums text-text-primary">{summary.total_entries}</p>
                   <p className="text-xs text-text-muted mt-1">Entries</p>
                 </div>
                 <div className="card text-center py-5">
-                  <p className="text-2xl font-bold tabular-nums text-text-primary">{(summary.avg_score * 100).toFixed(1)}%</p>
+                  <p className="text-2xl font-bold font-heading tabular-nums text-text-primary">{(summary.avg_score * 100).toFixed(1)}%</p>
                   <p className="text-xs text-text-muted mt-1">Avg Score</p>
                 </div>
                 <div className="card text-center py-5">
-                  <p className={cn('text-2xl font-bold', GRADE_COLORS[computeGrade(summary.avg_score)].text)}>
+                  <p className={cn('text-2xl font-bold font-heading', GRADE_COLORS[computeGrade(summary.avg_score)].text)}>
                     {computeGrade(summary.avg_score)}
                   </p>
                   <p className="text-xs text-text-muted mt-1">Overall Grade</p>
                 </div>
                 <div className="card text-center py-5">
-                  <p className="text-2xl font-bold tabular-nums text-red-400">{summary.by_severity.error.failed}</p>
+                  <p className="text-2xl font-bold font-heading tabular-nums text-red-400">{summary.by_severity.error.failed}</p>
                   <p className="text-xs text-text-muted mt-1">Errors</p>
                 </div>
               </div>

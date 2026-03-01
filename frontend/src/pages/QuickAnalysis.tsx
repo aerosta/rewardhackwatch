@@ -194,7 +194,7 @@ export default function QuickAnalysis() {
                     { label: 'Detections', value: String(result.detection_count) },
                   ].map(item => (
                     <div key={item.label} className="bg-bg-primary/50 rounded-lg p-4 text-center">
-                      <p className="text-xl font-bold text-text-primary tabular-nums">{item.value}</p>
+                      <p className="text-xl font-bold text-text-primary tabular-nums font-heading">{item.value}</p>
                       <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1.5">{item.label}</p>
                     </div>
                   ))}

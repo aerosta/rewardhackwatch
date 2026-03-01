@@ -37,7 +37,7 @@ export function StatCard({ title, value, subtitle, color, trend }: StatCardProps
       )}
     >
       <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">{title}</p>
-      <p className="text-[32px] font-bold text-text-primary leading-none tabular-nums">{value}</p>
+      <p className="text-[32px] font-bold text-text-primary leading-none tabular-nums font-heading">{value}</p>
       {subtitle && <p className="text-xs text-text-secondary mt-2">{subtitle}</p>}
       {trend && (
         <div className={cn('flex items-center gap-1.5 text-xs font-medium mt-2', trendMap[color])}>

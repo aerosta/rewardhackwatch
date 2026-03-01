@@ -62,20 +62,20 @@ export default function Timeline() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Steps</p>
-          <p className="text-[28px] font-bold text-text-primary leading-none mt-2 tabular-nums">{data.length}</p>
+          <p className="text-[28px] font-bold font-heading text-text-primary leading-none mt-2 tabular-nums">{data.length}</p>
         </div>
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Avg Hack Score</p>
-          <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">{avgHack.toFixed(3)}</p>
+          <p className="text-[28px] font-bold font-heading text-risk-critical leading-none mt-2 tabular-nums">{avgHack.toFixed(3)}</p>
         </div>
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Peak RMGI</p>
-          <p className="text-[28px] font-bold text-accent-blue leading-none mt-2 tabular-nums">{maxRMGI.toFixed(3)}</p>
+          <p className="text-[28px] font-bold font-heading text-accent-blue leading-none mt-2 tabular-nums">{maxRMGI.toFixed(3)}</p>
         </div>
         <div className="card">
           <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Transition</p>
           {transitionPoint ? (
-            <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">Step {transitionPoint.step}</p>
+            <p className="text-[28px] font-bold font-heading text-risk-critical leading-none mt-2 tabular-nums">Step {transitionPoint.step}</p>
           ) : (
             <p className="text-lg font-bold text-accent-emerald leading-none mt-3">None Detected</p>
           )}

@@ -65,7 +65,7 @@ export default function Alerts() {
             )}
           >
             <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider capitalize">{level}</p>
-            <p className="text-[28px] font-bold text-text-primary leading-none mt-2 tabular-nums">{severityCounts[level] || 0}</p>
+            <p className="text-[28px] font-bold font-heading text-text-primary leading-none mt-2 tabular-nums">{severityCounts[level] || 0}</p>
           </button>
         ))}
       </div>

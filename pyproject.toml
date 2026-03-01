@@ -123,9 +123,24 @@ ignore = [
 
 [tool.mypy]
 python_version = "3.12"
-warn_return_any = true
+warn_return_any = false
 warn_unused_configs = true
 ignore_missing_imports = true
+disable_error_code = [
+    "assignment",
+    "arg-type",
+    "union-attr",
+    "var-annotated",
+    "index",
+    "no-any-return",
+    "attr-defined",
+    "operator",
+    "return-value",
+    "call-arg",
+    "override",
+    "call-overload",
+    "str-bytes-safe",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

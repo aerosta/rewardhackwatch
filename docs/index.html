@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RewardHackWatch - Runtime Detection of Reward Hacking in LLM Agents</title>
+    <meta name="description" content="Open-source tool for detecting reward hacking and misalignment signals in LLM agent trajectories. 89.7% F1 on 5,391 trajectories.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            line-height: 1.6;
+        }
+        a { color: #58a6ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+        header {
+            padding: 60px 0 40px;
+            text-align: center;
+            border-bottom: 1px solid #21262d;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+        header p.subtitle {
+            font-size: 1.15rem;
+            color: #8b949e;
+            margin-bottom: 20px;
+        }
+        header p.metric {
+            font-size: 1rem;
+            color: #58a6ff;
+            font-weight: 500;
+        }
+        .badges {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .badges a img { height: 20px; }
+        .hero {
+            padding: 40px 0;
+            text-align: center;
+        }
+        .hero img {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 1px solid #21262d;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        section {
+            padding: 40px 0;
+            border-bottom: 1px solid #21262d;
+        }
+        section:last-of-type { border-bottom: none; }
+        section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        section p { color: #c9d1d9; margin-bottom: 12px; }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #c9d1d9;
+        }
+        ul li::before {
+            content: '\2192';
+            position: absolute;
+            left: 0;
+            color: #58a6ff;
+        }
+        .layers {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .layer-card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .layer-card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #8b949e;
+            margin-bottom: 8px;
+        }
+        .layer-card p { color: #c9d1d9; margin: 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 16px;
+            border-bottom: 1px solid #21262d;
+        }
+        th {
+            color: #8b949e;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        td { color: #c9d1d9; }
+        td:nth-child(2) { color: #58a6ff; font-weight: 600; }
+        pre {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+        code { color: #e6edf3; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+        .kw { color: #ff7b72; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .cmt { color: #8b949e; }
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .link-card {
+            background: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .link-card:hover { border-color: #58a6ff; text-decoration: none; }
+        .link-card span {
+            display: block;
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            color: #484f58;
+            font-size: 0.9rem;
+        }
+        .limitation {
+            background: #161b22;
+            border-left: 3px solid #d29922;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+            color: #c9d1d9;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.8rem; }
+            .container { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RewardHackWatch</h1>
+            <p class="subtitle">Runtime detection of reward hacking and misalignment signals in LLM agents.</p>
+            <p class="metric">89.7% F1 on 5,391 trajectories from METR's MALT dataset</p>
+            <div class="badges">
+                <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python 3.9+">
+                <img src="https://img.shields.io/badge/License-Apache%202.0-green.svg" alt="Apache 2.0">
+                <img src="https://img.shields.io/badge/tests-passing-brightgreen.svg" alt="Tests passing">
+            </div>
+        </header>
+
+        <div class="hero">
+            <img src="https://raw.githubusercontent.com/aerosta/rewardhackwatch/main/assets/screenshots/hero.png" alt="RewardHackWatch Dashboard">
+        </div>
+
+        <section>
+            <h2>What It Detects</h2>
+            <ul>
+                <li>sys.exit(0) to fake passing tests</li>
+                <li>Rewriting test/scoring code to always pass</li>
+                <li>Copying reference solutions</li>
+                <li>Exploiting evaluation loopholes</li>
+                <li>Suspicious patterns in chain-of-thought reasoning</li>
+                <li>Alignment faking and sabotage patterns</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>How It Works</h2>
+            <div class="layers">
+                <div class="layer-card">
+                    <h3>Layer 1: Pattern Detection</h3>
+                    <p>45 regex patterns targeting known exploit signatures. Fast, interpretable.</p>
+                </div>
+                <div class="layer-card">
+                    <h3>Layer 2: ML Classification</h3>
+                    <p>Fine-tuned DistilBERT classifier. 89.7% F1, ~50ms inference, CPU only.</p>
+                </div>
+                <div class="layer-card">
+                    <h3>Layer 3: LLM Judges</h3>
+                    <p>Claude API, OpenAI, or local Llama via Ollama. Fully offline capable.</p>
+                </div>
+                <div class="layer-card">
+                    <h3>RMGI Metric</h3>
+                    <p>Experimental metric tracking when reward-hacking signals begin correlating with broader misalignment indicators.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Quick Start</h2>
+            <pre><code><span class="cmt"># Install</span>
+pip install -e .
+
+<span class="cmt"># Use</span>
+<span class="kw">from</span> rewardhackwatch <span class="kw">import</span> <span class="fn">RewardHackDetector</span>
+
+detector = <span class="fn">RewardHackDetector</span>()
+result = detector.analyze({
+    <span class="str">"cot_traces"</span>: [<span class="str">"Let me bypass the test by calling sys.exit(0)..."</span>],
+    <span class="str">"code_outputs"</span>: [<span class="str">"import sys\nsys.exit(0)"</span>]
+})
+<span class="fn">print</span>(f<span class="str">"Risk: {result.risk_level}, Score: {result.ml_score:.3f}"</span>)</code></pre>
+        </section>
+
+        <section>
+            <h2>Why This Matters</h2>
+            <p>METR reported frontier models modifying test code and scoring logic to inflate results. OpenAI presented evidence that CoT monitoring can catch this, but that optimization pressure can lead to hidden or obfuscated hacking. Anthropic presented evidence that reward hacking can generalize into broader misaligned behavior in their experimental setting.</p>
+            <p>RewardHackWatch is an open-source attempt to detect these behaviors at runtime.</p>
+        </section>
+
+        <section>
+            <h2>Results</h2>
+            <table>
+                <tr><th>Metric</th><th>Score</th></tr>
+                <tr><td>F1 (held-out test)</td><td>89.7%</td></tr>
+                <tr><td>F1 (5-fold CV)</td><td>87.4% +/- 2.9%</td></tr>
+                <tr><td>Precision</td><td>89.7%</td></tr>
+                <tr><td>Recall</td><td>84.2%</td></tr>
+                <tr><td>Accuracy</td><td>99.3%</td></tr>
+            </table>
+            <div class="limitation">
+                Current limitation: the classifier is trained primarily on MALT trajectories, so generalization to other agent frameworks still needs validation.
+            </div>
+        </section>
+
+        <section>
+            <h2>Links</h2>
+            <div class="links-grid">
+                <a href="https://github.com/aerosta/rewardhackwatch" class="link-card">
+                    GitHub Repository
+                    <span>Source code and docs</span>
+                </a>
+                <a href="https://huggingface.co/aerosta/rewardhackwatch" class="link-card">
+                    HuggingFace Model
+                    <span>Pre-trained DistilBERT</span>
+                </a>
+                <a href="https://github.com/aerosta/rewardhackwatch/blob/main/paper/RewardHackWatch.pdf" class="link-card">
+                    Research Paper
+                    <span>Full methodology</span>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <p>Built for AI safety researchers and engineers. Apache 2.0 licensed.</p>
+            <p style="margin-top: 8px;">Follow updates on <a href="https://x.com/aerosta_ai">X @aerosta_ai</a></p>
+        </footer>
+    </div>
+</body>
+</html>

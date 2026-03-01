@@ -337,5 +337,3 @@ Copyright 2025-2026 Aerosta
 ---
 
 Built for AI safety researchers and engineers. [Follow on X](https://x.com/aerosta_ai)
-
-**Keywords:** reward hacking detection, LLM safety, AI alignment, misalignment detection, RLHF safety, reward tampering, specification gaming, AI safety tools, language model monitoring, agent safety

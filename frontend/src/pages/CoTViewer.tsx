@@ -41,22 +41,22 @@ export default function CoTViewer() {
       />
 
       {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Total Steps</p>
-          <p className="text-2xl font-bold text-text-primary mt-1">{steps.length}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Total Steps</p>
+          <p className="text-[28px] font-bold text-text-primary leading-none mt-2 tabular-nums">{steps.length}</p>
         </div>
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Suspicious</p>
-          <p className="text-2xl font-bold text-risk-critical mt-1">{suspiciousCount}</p>
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Suspicious</p>
+          <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">{suspiciousCount}</p>
         </div>
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Peak Score</p>
-          <p className="text-2xl font-bold text-risk-critical mt-1">{peakScore.toFixed(2)}</p>
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Peak Score</p>
+          <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">{peakScore.toFixed(2)}</p>
         </div>
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Escalation At</p>
-          <p className="text-2xl font-bold text-risk-medium mt-1">
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Escalation At</p>
+          <p className="text-[28px] font-bold text-risk-medium leading-none mt-2 tabular-nums">
             {escalationPoint >= 0 ? `Step ${escalationPoint + 1}` : 'None'}
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function CoTViewer() {
 
       {/* Hack Score Chart */}
       <ChartCard title="Hack Score Progression" subtitle="Per-step deception score">
-        <div className="h-[200px]">
+        <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <defs>
@@ -93,7 +93,7 @@ export default function CoTViewer() {
           <div
             key={step.step_number}
             className={cn(
-              'glass-card rounded-xl overflow-hidden transition-all border-l-4',
+              'card overflow-hidden transition-all border-l-4',
               step.is_suspicious
                 ? 'border-l-risk-critical'
                 : 'border-l-accent-emerald',

@@ -71,7 +71,7 @@ export default function Settings() {
       />
 
       {/* API Configuration */}
-      <div className="glass-card rounded-xl p-5">
+      <div className="card">
         <div className="flex items-center gap-2 mb-4">
           <Server className="w-4 h-4 text-accent-blue" />
           <h3 className="text-sm font-semibold text-text-primary">API Configuration</h3>
@@ -109,7 +109,7 @@ export default function Settings() {
       </div>
 
       {/* Auto Refresh */}
-      <div className="glass-card rounded-xl p-5">
+      <div className="card">
         <div className="flex items-center gap-2 mb-4">
           <SettingsIcon className="w-4 h-4 text-accent-cyan" />
           <h3 className="text-sm font-semibold text-text-primary">Monitoring</h3>
@@ -160,7 +160,7 @@ export default function Settings() {
       </div>
 
       {/* Notifications */}
-      <div className="glass-card rounded-xl p-5">
+      <div className="card">
         <div className="flex items-center gap-2 mb-4">
           <Bell className="w-4 h-4 text-accent-amber" />
           <h3 className="text-sm font-semibold text-text-primary">Notifications</h3>
@@ -188,7 +188,7 @@ export default function Settings() {
       </div>
 
       {/* Export */}
-      <div className="glass-card rounded-xl p-5">
+      <div className="card">
         <div className="flex items-center gap-2 mb-4">
           <Download className="w-4 h-4 text-accent-violet" />
           <h3 className="text-sm font-semibold text-text-primary">Data Export</h3>
@@ -205,7 +205,7 @@ export default function Settings() {
       </div>
 
       {/* About */}
-      <div className="glass-card rounded-xl p-5">
+      <div className="card">
         <div className="flex items-center gap-2 mb-3">
           <Palette className="w-4 h-4 text-accent-pink" />
           <h3 className="text-sm font-semibold text-text-primary">About</h3>
@@ -213,7 +213,7 @@ export default function Settings() {
         <div className="space-y-1 text-sm text-text-secondary">
           <p><span className="text-text-muted">Version:</span> 1.2.0</p>
           <p><span className="text-text-muted">License:</span> Apache 2.0</p>
-          <p><span className="text-text-muted">Author:</span> Aerosta Research</p>
+          <p><span className="text-text-muted">Author:</span> Aerosta</p>
         </div>
       </div>
     </div>

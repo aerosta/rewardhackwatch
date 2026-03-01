@@ -21,23 +21,21 @@ export default function App() {
         <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
         <main
           className={cn(
-            'flex-1 transition-all duration-300 p-6',
-            sidebarCollapsed ? 'ml-[68px]' : 'ml-[240px]',
+            'flex-1 min-w-0 transition-all duration-300 p-6',
+            sidebarCollapsed ? 'ml-[56px]' : 'ml-[200px]',
           )}
         >
-          <div className="max-w-[1400px] mx-auto">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/analyze" element={<QuickAnalysis />} />
-              <Route path="/timeline" element={<Timeline />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/cross-model" element={<CrossModel />} />
-              <Route path="/cot-viewer" element={<CoTViewer />} />
-              <Route path="/jsonl" element={<JsonlAnalyzer />} />
-              <Route path="/sessions" element={<SessionLogs />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/analyze" element={<QuickAnalysis />} />
+            <Route path="/timeline" element={<Timeline />} />
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/cross-model" element={<CrossModel />} />
+            <Route path="/cot-viewer" element={<CoTViewer />} />
+            <Route path="/jsonl" element={<JsonlAnalyzer />} />
+            <Route path="/sessions" element={<SessionLogs />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
         </main>
       </div>
     </BrowserRouter>

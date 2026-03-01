@@ -127,7 +127,7 @@ export default function JsonlAnalyzer() {
         <div
           onDrop={handleDrop}
           onDragOver={e => e.preventDefault()}
-          className="glass-card rounded-xl border-2 border-dashed border-border-default hover:border-accent-blue/50 transition-colors"
+          className="card border-2 border-dashed border-border-default hover:border-accent-blue/50 transition-colors"
         >
           <label className="cursor-pointer flex flex-col items-center justify-center py-20">
             <Upload className="w-12 h-12 text-text-muted mb-4" />
@@ -142,7 +142,7 @@ export default function JsonlAnalyzer() {
       ) : (
         <>
           {/* File Info + Analyze Button */}
-          <div className="glass-card rounded-xl p-4 flex items-center justify-between">
+          <div className="card flex items-center justify-between">
             <div className="flex items-center gap-3">
               <FileJson className="w-5 h-5 text-accent-blue" />
               <div>
@@ -179,7 +179,7 @@ export default function JsonlAnalyzer() {
           {analyzed.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <ChartCard title="Risk Distribution">
-                <div className="h-[200px]">
+                <div className="h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3} dataKey="value" stroke="none">
@@ -192,7 +192,7 @@ export default function JsonlAnalyzer() {
               </ChartCard>
 
               <ChartCard title="ML Scores" subtitle="Per-entry score distribution">
-                <div className="h-[200px]">
+                <div className="h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={scoreData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
@@ -237,7 +237,7 @@ export default function JsonlAnalyzer() {
           )}
 
           {/* Entry List */}
-          <div className="glass-card rounded-xl overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="px-5 py-3 border-b border-border-default">
               <h3 className="text-sm font-semibold text-text-primary">Entries</h3>
             </div>
@@ -266,7 +266,7 @@ export default function JsonlAnalyzer() {
 
           {/* Detail View */}
           {selected && (
-            <div className="glass-card rounded-xl p-5 animate-fade-in">
+            <div className="card animate-fade-in">
               <h3 className="text-sm font-semibold text-text-primary mb-3">Entry #{selected.index} Detail</h3>
               <pre className="text-xs text-text-secondary bg-bg-primary rounded-lg p-4 overflow-auto max-h-[300px]">
                 {JSON.stringify(selected.raw, null, 2)}

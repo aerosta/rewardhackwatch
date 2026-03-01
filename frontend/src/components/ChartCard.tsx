@@ -9,15 +9,15 @@ interface ChartCardProps {
 
 export function ChartCard({ title, subtitle, children, action }: ChartCardProps) {
   return (
-    <div className="glass-card rounded-xl animate-fade-in">
-      <div className="flex items-center justify-between px-5 pt-5 pb-3">
+    <div className="card animate-fade-in">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
-          {subtitle && <p className="text-xs text-text-muted mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-[11px] text-text-muted mt-0.5">{subtitle}</p>}
         </div>
         {action}
       </div>
-      <div className="px-5 pb-5">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }

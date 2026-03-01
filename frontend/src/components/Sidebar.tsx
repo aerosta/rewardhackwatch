@@ -37,25 +37,28 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <aside
       className={cn(
         'fixed left-0 top-0 h-screen bg-bg-secondary border-r border-border-default',
-        'flex flex-col transition-all duration-300 z-50',
-        collapsed ? 'w-[68px]' : 'w-[240px]',
+        'flex flex-col transition-all duration-200 z-50',
+        collapsed ? 'w-[56px]' : 'w-[200px]',
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-border-default">
-        <div className="w-9 h-9 rounded-lg bg-accent-blue/20 flex items-center justify-center flex-shrink-0">
-          <Shield className="w-5 h-5 text-accent-blue" />
+      <div className={cn(
+        'flex items-center h-14 border-b border-border-default flex-shrink-0',
+        collapsed ? 'justify-center' : 'gap-2.5 px-4',
+      )}>
+        <div className="w-8 h-8 rounded-lg bg-accent-blue/15 flex items-center justify-center flex-shrink-0">
+          <Shield className="w-[18px] h-[18px] text-accent-blue" />
         </div>
         {!collapsed && (
-          <div className="animate-fade-in">
-            <div className="text-sm font-bold text-text-primary tracking-tight">RewardHack</div>
-            <div className="text-[10px] font-medium text-accent-cyan tracking-widest uppercase">Watch</div>
+          <div className="overflow-hidden">
+            <div className="text-[13px] font-bold text-text-primary leading-tight tracking-tight">RewardHack</div>
+            <div className="text-[9px] font-semibold text-accent-cyan tracking-[0.2em] uppercase leading-tight">Watch</div>
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 py-2 overflow-y-auto">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
@@ -63,16 +66,17 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             end={item.to === '/'}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
-                'hover:bg-bg-elevated hover:text-text-primary group',
+                'relative flex items-center h-10 text-[13px] font-medium transition-colors duration-150',
+                collapsed ? 'justify-center mx-1.5 rounded-lg' : 'gap-3 px-4',
                 isActive
-                  ? 'bg-accent-blue/10 text-accent-blue'
-                  : 'text-text-secondary',
+                  ? 'text-accent-blue bg-accent-blue/8'
+                  : 'text-text-muted hover:text-text-secondary hover:bg-bg-elevated/50',
+                !collapsed && isActive && 'border-l-[3px] border-l-accent-blue pl-[13px]',
               )
             }
           >
-            <item.icon className={cn('w-[18px] h-[18px] flex-shrink-0')} />
-            {!collapsed && <span className="animate-fade-in truncate">{item.label}</span>}
+            <item.icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.8} />
+            {!collapsed && <span className="truncate">{item.label}</span>}
           </NavLink>
         ))}
       </nav>
@@ -80,7 +84,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Collapse toggle */}
       <button
         onClick={onToggle}
-        className="flex items-center justify-center h-12 border-t border-border-default text-text-muted hover:text-text-primary transition-colors"
+        className="flex items-center justify-center h-10 border-t border-border-default text-text-muted hover:text-text-secondary transition-colors flex-shrink-0"
       >
         {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
       </button>

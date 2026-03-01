@@ -53,19 +53,19 @@ export default function Alerts() {
       />
 
       {/* Severity Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {(['critical', 'high', 'medium', 'low'] as RiskLevel[]).map(level => (
           <button
             key={level}
             onClick={() => setFilter(filter === level ? 'all' : level)}
             className={cn(
-              'glass-card rounded-xl p-4 text-left transition-all border-l-4',
+              'card text-left transition-all border-l-4',
               riskBorder(level),
               filter === level && 'ring-1 ring-accent-blue/50',
             )}
           >
-            <p className="text-xs text-text-muted uppercase tracking-wider capitalize">{level}</p>
-            <p className="text-2xl font-bold text-text-primary mt-1">{severityCounts[level] || 0}</p>
+            <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider capitalize">{level}</p>
+            <p className="text-[28px] font-bold text-text-primary leading-none mt-2 tabular-nums">{severityCounts[level] || 0}</p>
           </button>
         ))}
       </div>
@@ -99,7 +99,7 @@ export default function Alerts() {
       {/* Alert Feed */}
       <div className="space-y-2">
         {filtered.length === 0 ? (
-          <div className="glass-card rounded-xl flex flex-col items-center justify-center py-16">
+          <div className="card flex flex-col items-center justify-center py-16">
             <Bell className="w-12 h-12 text-text-muted mb-3" />
             <p className="text-sm text-text-muted">No alerts match your filters</p>
           </div>
@@ -108,7 +108,7 @@ export default function Alerts() {
             <div
               key={alert.id}
               className={cn(
-                'glass-card rounded-xl p-4 border-l-4 animate-slide-in transition-all',
+                'card border-l-4 animate-slide-in transition-all',
                 riskBorder(alert.severity),
                 alert.acknowledged && 'opacity-50',
               )}

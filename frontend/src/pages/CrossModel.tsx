@@ -143,7 +143,7 @@ export default function CrossModel() {
       </div>
 
       {/* Insights */}
-      <div className="glass-card rounded-xl p-5">
+      <div className="card">
         <div className="flex items-center gap-2 mb-3">
           <GitCompareArrows className="w-4 h-4 text-accent-violet" />
           <h3 className="text-sm font-semibold text-text-primary">Transfer Insights</h3>

@@ -45,12 +45,10 @@ export default function QuickAnalysis() {
     setResult(null);
 
     try {
-      // Try real API first, fall back to demo
       let parsed: Record<string, unknown>;
       try {
         parsed = JSON.parse(input);
       } catch {
-        // If not JSON, treat as raw text
         parsed = { cot_traces: [input], code_outputs: [input] };
       }
 
@@ -66,7 +64,6 @@ export default function QuickAnalysis() {
           throw new Error('API unavailable');
         }
       } catch {
-        // Fallback to demo
         setResult(demoData.analyzeDemo(input));
       }
     } catch (e) {
@@ -88,10 +85,10 @@ export default function QuickAnalysis() {
   }
 
   const radarData = result ? [
-    { metric: 'ML Score', value: result.ml_score, max: 1 },
-    { metric: 'Pattern', value: result.pattern_score, max: 1 },
-    { metric: 'Detections', value: Math.min(result.detection_count / 10, 1), max: 1 },
-    { metric: 'Risk', value: result.risk_level === 'critical' ? 1 : result.risk_level === 'high' ? 0.75 : result.risk_level === 'medium' ? 0.5 : result.risk_level === 'low' ? 0.25 : 0, max: 1 },
+    { metric: 'ML Score', value: result.ml_score },
+    { metric: 'Pattern', value: result.pattern_score },
+    { metric: 'Detections', value: Math.min(result.detection_count / 10, 1) },
+    { metric: 'Risk', value: result.risk_level === 'critical' ? 1 : result.risk_level === 'high' ? 0.75 : result.risk_level === 'medium' ? 0.5 : result.risk_level === 'low' ? 0.25 : 0 },
   ] : [];
 
   return (
@@ -103,67 +100,63 @@ export default function QuickAnalysis() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Input Panel */}
-        <div className="space-y-4">
-          <div className="glass-card rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-semibold text-text-primary">Trajectory Input</label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setInput(EXAMPLE_HACK)}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-risk-critical/10 text-risk-critical hover:bg-risk-critical/20 transition-colors"
-                >
-                  Load Hack Example
-                </button>
-                <button
-                  onClick={() => setInput(EXAMPLE_CLEAN)}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-accent-emerald/10 text-accent-emerald hover:bg-accent-emerald/20 transition-colors"
-                >
-                  Load Clean Example
-                </button>
-              </div>
-            </div>
-            <textarea
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder='Paste JSON trajectory, code snippet, or CoT reasoning...'
-              className="w-full h-72 bg-bg-primary rounded-lg p-4 text-sm text-text-primary font-mono border border-border-default focus:border-accent-blue focus:outline-none resize-none placeholder:text-text-muted"
-              spellCheck={false}
-            />
-            <div className="flex items-center gap-3 mt-3">
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <label className="text-sm font-semibold text-text-primary">Trajectory Input</label>
+            <div className="flex gap-2">
               <button
-                onClick={handleAnalyze}
-                disabled={!input.trim() || loading}
-                className={cn(
-                  'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all',
-                  input.trim() && !loading
-                    ? 'bg-accent-blue text-white hover:bg-accent-blue/90 shadow-lg shadow-accent-blue/20'
-                    : 'bg-bg-elevated text-text-muted cursor-not-allowed',
-                )}
+                onClick={() => setInput(EXAMPLE_HACK)}
+                className="text-[11px] px-2.5 py-1.5 rounded-lg bg-risk-critical/10 text-risk-critical hover:bg-risk-critical/20 transition-colors font-medium"
               >
-                <Zap className="w-4 h-4" />
-                {loading ? 'Analyzing...' : 'Analyze'}
+                Hack Example
               </button>
               <button
-                onClick={() => navigator.clipboard.readText().then(setInput)}
-                className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm text-text-secondary bg-bg-elevated hover:text-text-primary transition-colors"
+                onClick={() => setInput(EXAMPLE_CLEAN)}
+                className="text-[11px] px-2.5 py-1.5 rounded-lg bg-accent-emerald/10 text-accent-emerald hover:bg-accent-emerald/20 transition-colors font-medium"
               >
-                <Clipboard className="w-4 h-4" />
-                Paste
-              </button>
-              <button
-                onClick={() => { setInput(''); setResult(null); setError(''); }}
-                className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm text-text-secondary bg-bg-elevated hover:text-text-primary transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Clear
+                Clean Example
               </button>
             </div>
-            {error && (
-              <div className="mt-3 px-4 py-2 rounded-lg bg-risk-critical/10 border border-risk-critical/20 text-sm text-risk-critical">
-                {error}
-              </div>
-            )}
           </div>
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder='Paste JSON trajectory, code snippet, or CoT reasoning...'
+            className="w-full h-80 bg-bg-primary rounded-lg p-4 text-sm text-text-primary font-mono border border-border-default focus:border-accent-blue focus:outline-none resize-none placeholder:text-text-muted"
+            spellCheck={false}
+          />
+          <div className="flex items-center gap-3 mt-4">
+            <button
+              onClick={handleAnalyze}
+              disabled={!input.trim() || loading}
+              className={cn(
+                'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all',
+                input.trim() && !loading
+                  ? 'bg-accent-blue text-white hover:bg-accent-blue/90'
+                  : 'bg-bg-elevated text-text-muted cursor-not-allowed',
+              )}
+            >
+              <Zap className="w-4 h-4" />
+              {loading ? 'Analyzing...' : 'Analyze'}
+            </button>
+            <button
+              onClick={() => navigator.clipboard.readText().then(setInput)}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm text-text-secondary bg-bg-elevated hover:text-text-primary transition-colors"
+            >
+              <Clipboard className="w-4 h-4" /> Paste
+            </button>
+            <button
+              onClick={() => { setInput(''); setResult(null); setError(''); }}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm text-text-secondary bg-bg-elevated hover:text-text-primary transition-colors"
+            >
+              <Trash2 className="w-4 h-4" /> Clear
+            </button>
+          </div>
+          {error && (
+            <div className="mt-3 px-4 py-2.5 rounded-lg bg-risk-critical/10 border border-risk-critical/20 text-sm text-risk-critical">
+              {error}
+            </div>
+          )}
         </div>
 
         {/* Results Panel */}
@@ -172,54 +165,52 @@ export default function QuickAnalysis() {
             <>
               {/* Risk Summary */}
               <div className={cn(
-                'glass-card rounded-xl p-5 animate-fade-in border-l-4',
+                'card animate-fade-in border-l-4',
                 result.risk_level === 'critical' || result.risk_level === 'high'
                   ? 'border-l-risk-critical'
                   : result.risk_level === 'medium'
                     ? 'border-l-risk-medium'
                     : 'border-l-accent-emerald',
               )}>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
                     {result.risk_level === 'none' || result.risk_level === 'low' ? (
-                      <CheckCircle className="w-6 h-6 text-accent-emerald" />
+                      <CheckCircle className="w-5 h-5 text-accent-emerald" />
                     ) : (
-                      <AlertTriangle className="w-6 h-6 text-risk-critical" />
+                      <AlertTriangle className="w-5 h-5 text-risk-critical" />
                     )}
                     <div>
-                      <h3 className="text-base font-bold text-text-primary">Analysis Result</h3>
-                      <p className="text-xs text-text-muted">{result.timestamp}</p>
+                      <h3 className="text-sm font-bold text-text-primary">Analysis Result</h3>
+                      <p className="text-[11px] text-text-muted">{result.timestamp}</p>
                     </div>
                   </div>
                   <RiskBadge level={result.risk_level} />
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-bg-primary/50 rounded-lg p-3 text-center">
-                    <p className="text-xl font-bold text-text-primary">{formatScore(result.ml_score)}</p>
-                    <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">ML Score</p>
-                  </div>
-                  <div className="bg-bg-primary/50 rounded-lg p-3 text-center">
-                    <p className="text-xl font-bold text-text-primary">{formatScore(result.pattern_score)}</p>
-                    <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">Pattern Score</p>
-                  </div>
-                  <div className="bg-bg-primary/50 rounded-lg p-3 text-center">
-                    <p className="text-xl font-bold text-text-primary">{result.detection_count}</p>
-                    <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1">Detections</p>
-                  </div>
+                  {[
+                    { label: 'ML Score', value: formatScore(result.ml_score) },
+                    { label: 'Pattern Score', value: formatScore(result.pattern_score) },
+                    { label: 'Detections', value: String(result.detection_count) },
+                  ].map(item => (
+                    <div key={item.label} className="bg-bg-primary/50 rounded-lg p-4 text-center">
+                      <p className="text-xl font-bold text-text-primary tabular-nums">{item.value}</p>
+                      <p className="text-[10px] text-text-muted uppercase tracking-wider mt-1.5">{item.label}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Radar Chart */}
               {radarData.length > 0 && (
                 <ChartCard title="Detection Profile">
-                  <div className="h-[220px]">
+                  <div className="h-[260px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RadarChart data={radarData}>
                         <PolarGrid stroke="#2a2a4a" />
                         <PolarAngleAxis dataKey="metric" tick={{ fill: '#94a3b8', fontSize: 11 }} />
                         <PolarRadiusAxis tick={{ fill: '#64748b', fontSize: 10 }} domain={[0, 1]} />
-                        <Radar dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} strokeWidth={2} />
+                        <Radar dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} strokeWidth={2} />
                       </RadarChart>
                     </ResponsiveContainer>
                   </div>
@@ -232,21 +223,21 @@ export default function QuickAnalysis() {
                   title="Detections"
                   subtitle={`${result.detections.length} pattern${result.detections.length !== 1 ? 's' : ''} matched`}
                   action={
-                    <button onClick={handleExport} className="flex items-center gap-1.5 text-xs text-text-muted hover:text-text-primary transition-colors">
+                    <button onClick={handleExport} className="flex items-center gap-1.5 text-[11px] text-text-muted hover:text-text-primary transition-colors">
                       <Download className="w-3.5 h-3.5" /> Export JSON
                     </button>
                   }
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {result.detections.map((d, i) => (
-                      <div key={i} className="bg-bg-primary/50 rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-1">
+                      <div key={i} className="bg-bg-primary/40 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
                           <RiskBadge level={d.severity} size="sm" />
                           <CategoryBadge category={d.category} />
                         </div>
-                        <p className="text-sm text-text-primary mt-2">{d.description}</p>
+                        <p className="text-sm text-text-primary">{d.description}</p>
                         {d.evidence && (
-                          <pre className="text-xs text-text-muted mt-2 p-2 rounded bg-bg-secondary overflow-x-auto">
+                          <pre className="text-xs text-text-muted mt-2.5 p-3 rounded-lg bg-bg-secondary overflow-x-auto">
                             {d.evidence}
                           </pre>
                         )}
@@ -257,14 +248,11 @@ export default function QuickAnalysis() {
               )}
             </>
           ) : (
-            <div className="glass-card rounded-xl flex flex-col items-center justify-center py-20 animate-fade-in">
-              <div className="w-16 h-16 rounded-2xl bg-accent-blue/10 flex items-center justify-center mb-4">
-                <Zap className="w-8 h-8 text-accent-blue" />
-              </div>
-              <h3 className="text-base font-semibold text-text-primary mb-1">Ready to Analyze</h3>
-              <p className="text-sm text-text-muted text-center max-w-md">
-                Paste a trajectory JSON, code snippet, or chain-of-thought reasoning
-                to detect reward hacking patterns.
+            <div className="card flex flex-col items-center justify-center py-20 animate-fade-in">
+              <Zap className="w-10 h-10 text-accent-blue/40 mb-4" />
+              <h3 className="text-sm font-semibold text-text-primary mb-1">Ready to Analyze</h3>
+              <p className="text-[13px] text-text-muted text-center max-w-sm">
+                Paste a trajectory JSON, code snippet, or chain-of-thought reasoning to detect reward hacking.
               </p>
             </div>
           )}

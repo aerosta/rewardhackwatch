@@ -27,6 +27,7 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-border-active) transparent;
+  box-sizing: border-box;
 }
 
 body {
@@ -36,43 +37,50 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slide-in {
-  from { opacity: 0; transform: translateX(-12px); }
+  from { opacity: 0; transform: translateX(-8px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-  50% { box-shadow: 0 0 20px 4px rgba(59, 130, 246, 0.15); }
-}
-
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+  animation: fade-in 0.25s ease-out;
 }
 
 .animate-slide-in {
-  animation: slide-in 0.25s ease-out;
+  animation: slide-in 0.2s ease-out;
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Glass morphism card effect */
-.glass-card {
-  background: linear-gradient(135deg, rgba(30, 30, 58, 0.8), rgba(37, 37, 71, 0.4));
-  backdrop-filter: blur(12px);
+/* Card base */
+.card {
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  padding: 24px;
 }
 
-/* Code block styling */
-pre, code {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+/* Tabular numbers for data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Monospace for IDs and code */
+pre, code, .font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* Select styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
 }

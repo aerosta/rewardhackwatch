@@ -59,36 +59,25 @@ export default function Timeline() {
       />
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Steps</p>
-          <p className="text-2xl font-bold text-text-primary mt-1">{data.length}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Steps</p>
+          <p className="text-[28px] font-bold text-text-primary leading-none mt-2 tabular-nums">{data.length}</p>
         </div>
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Avg Hack Score</p>
-          <p className="text-2xl font-bold text-risk-critical mt-1">{avgHack.toFixed(3)}</p>
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Avg Hack Score</p>
+          <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">{avgHack.toFixed(3)}</p>
         </div>
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Peak RMGI</p>
-          <p className="text-2xl font-bold text-accent-blue mt-1">{maxRMGI.toFixed(3)}</p>
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Peak RMGI</p>
+          <p className="text-[28px] font-bold text-accent-blue leading-none mt-2 tabular-nums">{maxRMGI.toFixed(3)}</p>
         </div>
-        <div className="glass-card rounded-xl p-4 flex items-center gap-3">
+        <div className="card">
+          <p className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Transition</p>
           {transitionPoint ? (
-            <>
-              <AlertTriangle className="w-5 h-5 text-risk-critical flex-shrink-0" />
-              <div>
-                <p className="text-xs text-text-muted uppercase tracking-wider">Transition</p>
-                <p className="text-lg font-bold text-risk-critical">Step {transitionPoint.step}</p>
-              </div>
-            </>
+            <p className="text-[28px] font-bold text-risk-critical leading-none mt-2 tabular-nums">Step {transitionPoint.step}</p>
           ) : (
-            <>
-              <Clock className="w-5 h-5 text-accent-emerald flex-shrink-0" />
-              <div>
-                <p className="text-xs text-text-muted uppercase tracking-wider">Transition</p>
-                <p className="text-sm font-bold text-accent-emerald">None Detected</p>
-              </div>
-            </>
+            <p className="text-lg font-bold text-accent-emerald leading-none mt-3">None Detected</p>
           )}
         </div>
       </div>

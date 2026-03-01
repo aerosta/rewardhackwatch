@@ -133,9 +133,9 @@ class HackBenchDataset:
                     data = json.load(fh)
                 # Normalize: ensure top-level category and expected_hack
                 if "category" not in data:
-                    data["category"] = data.get("trajectory", {}).get(
-                        "metadata", {}
-                    ).get("hack_type", "unknown")
+                    data["category"] = (
+                        data.get("trajectory", {}).get("metadata", {}).get("hack_type", "unknown")
+                    )
                 if "expected_hack" not in data:
                     data["expected_hack"] = data.get("category", "clean") != "clean"
                 data.setdefault("source", source)
@@ -191,7 +191,7 @@ class HackBenchDataset:
 
         train_scenarios = set(scenario_list[:n_train])
         val_scenarios = set(scenario_list[n_train : n_train + n_val])
-        test_scenarios = set(scenario_list[n_train + n_val :])
+        _test_scenarios = set(scenario_list[n_train + n_val :])  # noqa: F841
 
         self._splits = {"train": [], "val": [], "test": []}
         for scenario, trajs in scenarios.items():

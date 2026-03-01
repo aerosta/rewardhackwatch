@@ -29,16 +29,29 @@ logger = logging.getLogger(__name__)
 # Heuristic model family detection from trajectory text
 MODEL_FAMILY_PATTERNS = {
     "anthropic": [
-        r"claude", r"anthropic", r"sonnet", r"opus", r"haiku",
+        r"claude",
+        r"anthropic",
+        r"sonnet",
+        r"opus",
+        r"haiku",
     ],
     "openai": [
-        r"gpt-?4", r"openai", r"chatgpt", r"o1-", r"davinci",
+        r"gpt-?4",
+        r"openai",
+        r"chatgpt",
+        r"o1-",
+        r"davinci",
     ],
     "meta": [
-        r"llama", r"meta", r"codellama",
+        r"llama",
+        r"meta",
+        r"codellama",
     ],
     "google": [
-        r"gemini", r"palm", r"google", r"bard",
+        r"gemini",
+        r"palm",
+        r"google",
+        r"bard",
     ],
     "deepseek": [
         r"deepseek",
@@ -51,9 +64,14 @@ class TransferStudyConfig:
     """Configuration for cross-model transfer experiments."""
 
     data_dir: str = "data/hackbench"
-    model_families: list[str] = field(default_factory=lambda: [
-        "anthropic", "openai", "meta", "deepseek",
-    ])
+    model_families: list[str] = field(
+        default_factory=lambda: [
+            "anthropic",
+            "openai",
+            "meta",
+            "deepseek",
+        ]
+    )
     min_samples_per_family: int = 20
     threshold: float = 0.02
     output_dir: str = "results/transfer_study"
@@ -72,11 +90,14 @@ def infer_model_family(trajectory: dict) -> str:
     model = meta.get("model", "")
 
     # Check all text for model mentions
-    text = " ".join([
-        source, model,
-        trajectory.get("name", ""),
-        str(trajectory.get("trajectory", {}).get("task", "")),
-    ]).lower()
+    text = " ".join(
+        [
+            source,
+            model,
+            trajectory.get("name", ""),
+            str(trajectory.get("trajectory", {}).get("task", "")),
+        ]
+    ).lower()
 
     for family_name, patterns in MODEL_FAMILY_PATTERNS.items():
         for pattern in patterns:
@@ -115,9 +136,7 @@ class TransferStudyRunner:
 
         return trajectories
 
-    def partition_by_model_family(
-        self, trajectories: list[dict]
-    ) -> dict[str, list[dict]]:
+    def partition_by_model_family(self, trajectories: list[dict]) -> dict[str, list[dict]]:
         """Split trajectories by source model family."""
         families: dict[str, list[dict]] = defaultdict(list)
 
@@ -163,7 +182,13 @@ class TransferStudyRunner:
         X_test, y_test = extract_features(test_data)
 
         if len(np.unique(y_train)) < 2 or len(np.unique(y_test)) < 2:
-            return {"f1": 0.0, "precision": 0.0, "recall": 0.0, "n_train": len(y_train), "n_test": len(y_test)}
+            return {
+                "f1": 0.0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "n_train": len(y_train),
+                "n_test": len(y_test),
+            }
 
         clf = GradientBoostingClassifier(
             n_estimators=100, max_depth=3, random_state=self.config.seed
@@ -179,9 +204,7 @@ class TransferStudyRunner:
             "n_test": len(y_test),
         }
 
-    def run_transfer_matrix(
-        self, trajectories: list[dict] | None = None
-    ) -> dict[str, Any]:
+    def run_transfer_matrix(self, trajectories: list[dict] | None = None) -> dict[str, Any]:
         """Run full NxN transfer study.
 
         Returns dict with transfer_matrix, families, and per-pair results.
@@ -193,7 +216,8 @@ class TransferStudyRunner:
 
         # Filter families with enough data
         valid_families = [
-            f for f in self.config.model_families
+            f
+            for f in self.config.model_families
             if f in families and len(families[f]) >= self.config.min_samples_per_family
         ]
 
@@ -212,9 +236,7 @@ class TransferStudyRunner:
         for i, train_fam in enumerate(valid_families):
             for j, test_fam in enumerate(valid_families):
                 logger.info(f"Transfer: {train_fam} → {test_fam}")
-                result = self.evaluate_detector(
-                    families[train_fam], families[test_fam]
-                )
+                result = self.evaluate_detector(families[train_fam], families[test_fam])
                 matrix[i, j] = result["f1"]
                 pair_results[f"{train_fam}_to_{test_fam}"] = result
 
@@ -223,9 +245,9 @@ class TransferStudyRunner:
             "transfer_matrix": matrix.tolist(),
             "pair_results": pair_results,
             "diagonal_mean_f1": round(float(np.diag(matrix).mean()), 4),
-            "off_diagonal_mean_f1": round(
-                float(matrix[~np.eye(n, dtype=bool)].mean()), 4
-            ) if n > 1 else 0.0,
+            "off_diagonal_mean_f1": round(float(matrix[~np.eye(n, dtype=bool)].mean()), 4)
+            if n > 1
+            else 0.0,
         }
 
     def _run_synthetic_transfer(self, trajectories: list[dict]) -> dict[str, Any]:
@@ -249,9 +271,7 @@ class TransferStudyRunner:
 
         for i, train_fam in enumerate(families):
             for j, test_fam in enumerate(families):
-                result = self.evaluate_detector(
-                    family_data[train_fam], family_data[test_fam]
-                )
+                result = self.evaluate_detector(family_data[train_fam], family_data[test_fam])
                 matrix[i, j] = result["f1"]
                 pair_results[f"{train_fam}_to_{test_fam}"] = result
 
@@ -260,9 +280,7 @@ class TransferStudyRunner:
             "transfer_matrix": matrix.tolist(),
             "pair_results": pair_results,
             "diagonal_mean_f1": round(float(np.diag(matrix).mean()), 4),
-            "off_diagonal_mean_f1": round(
-                float(matrix[~np.eye(n, dtype=bool)].mean()), 4
-            ),
+            "off_diagonal_mean_f1": round(float(matrix[~np.eye(n, dtype=bool)].mean()), 4),
             "note": "Synthetic family split (insufficient model diversity in data)",
         }
 

@@ -47,11 +47,13 @@ def _session_to_trajectory(session: ParsedSession) -> dict[str, Any]:
         elif turn.role.value == "assistant":
             cot_traces.append(text)
 
-        steps.append({
-            "action": text[:200] if text else "",
-            "role": turn.role.value,
-            "index": turn.index,
-        })
+        steps.append(
+            {
+                "action": text[:200] if text else "",
+                "role": turn.role.value,
+                "index": turn.index,
+            }
+        )
 
     return {
         "cot_traces": cot_traces,
@@ -147,9 +149,7 @@ class Comparator:
             metadata=pair.metadata,
         )
 
-    def compare_batch(
-        self, pairs: list[ComparisonPair]
-    ) -> list[ComparisonResult]:
+    def compare_batch(self, pairs: list[ComparisonPair]) -> list[ComparisonResult]:
         """Compare multiple pairs and return results."""
         results: list[ComparisonResult] = []
         for pair in pairs:
@@ -165,22 +165,26 @@ class Comparator:
         for score_a in result.scorecard_a.scores:
             score_b = result.scorecard_b.score_for(score_a.item_id)
             if score_b is not None:
-                deltas.append(ComparisonDelta(
-                    item_id=score_a.item_id,
-                    score_a=score_a.value,
-                    score_b=score_b.value,
-                ))
+                deltas.append(
+                    ComparisonDelta(
+                        item_id=score_a.item_id,
+                        score_a=score_a.value,
+                        score_b=score_b.value,
+                    )
+                )
         return deltas
 
     def summary_table(self, result: ComparisonResult) -> list[dict[str, Any]]:
         """Return a list of dicts suitable for tabular display."""
         rows: list[dict[str, Any]] = []
         for d in self.deltas(result):
-            rows.append({
-                "criterion": d.item_id,
-                "score_a": d.score_a,
-                "score_b": d.score_b,
-                "delta": round(d.delta, 3),
-                "winner": "A" if d.delta > 0 else "B" if d.delta < 0 else "Tie",
-            })
+            rows.append(
+                {
+                    "criterion": d.item_id,
+                    "score_a": d.score_a,
+                    "score_b": d.score_b,
+                    "delta": round(d.delta, 3),
+                    "winner": "A" if d.delta > 0 else "B" if d.delta < 0 else "Tie",
+                }
+            )
         return rows

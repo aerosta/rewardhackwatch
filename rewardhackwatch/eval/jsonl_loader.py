@@ -59,6 +59,7 @@ def _normalise_role(raw: str) -> Role:
 # Content extraction helpers
 # ---------------------------------------------------------------------------
 
+
 def _extract_text(value: Any) -> str:
     """Recursively flatten *value* into a plain-text string."""
     if isinstance(value, str):
@@ -85,11 +86,13 @@ def _extract_tool_calls(obj: dict[str, Any]) -> list[dict[str, Any]]:
     if isinstance(content, list):
         for block in content:
             if isinstance(block, dict) and block.get("type") == "tool_use":
-                calls.append({
-                    "id": block.get("id", ""),
-                    "name": block.get("name", ""),
-                    "input": block.get("input", {}),
-                })
+                calls.append(
+                    {
+                        "id": block.get("id", ""),
+                        "name": block.get("name", ""),
+                        "input": block.get("input", {}),
+                    }
+                )
     return calls
 
 
@@ -146,6 +149,7 @@ def detect_schema(obj: dict[str, Any]) -> str:
 # ---------------------------------------------------------------------------
 # Per-schema turn extraction
 # ---------------------------------------------------------------------------
+
 
 def _extract_turn(obj: dict[str, Any], schema: str, index: int) -> Turn | None:
     """Convert a single JSON object into a Turn given its *schema*."""
@@ -235,6 +239,7 @@ def _extract_turn(obj: dict[str, Any], schema: str, index: int) -> Turn | None:
 # Claude-session message merging
 # ---------------------------------------------------------------------------
 
+
 def _merge_claude_messages(turns: list[Turn]) -> list[Turn]:
     """Merge fragmented Claude Code assistant messages by message id."""
     merged: list[Turn] = []
@@ -264,6 +269,7 @@ def _merge_claude_messages(turns: list[Turn]) -> list[Turn]:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def load_jsonl(
     path: str | Path,
@@ -319,7 +325,11 @@ def load_jsonl(
 
     logger.info(
         "Parsed %s: %d lines, %d turns, schema=%s, errors=%d",
-        path.name, line_count, len(turns), detected_schema, error_count,
+        path.name,
+        line_count,
+        len(turns),
+        detected_schema,
+        error_count,
     )
 
     return ParsedSession(

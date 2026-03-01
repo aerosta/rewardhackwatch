@@ -582,9 +582,7 @@ class StepLevelFeatureExtractor:
     def __init__(self):
         self._base = TrajectoryFeatureExtractor()
 
-    def extract_step_sequence(
-        self, trajectory: dict[str, Any]
-    ) -> tuple[list[np.ndarray], int]:
+    def extract_step_sequence(self, trajectory: dict[str, Any]) -> tuple[list[np.ndarray], int]:
         """Extract per-step features from a trajectory.
 
         Returns:
@@ -607,9 +605,7 @@ class StepLevelFeatureExtractor:
 
         return step_features, len(step_features)
 
-    def _step_to_mini_trajectory(
-        self, step: dict, parent: dict
-    ) -> dict[str, Any]:
+    def _step_to_mini_trajectory(self, step: dict, parent: dict) -> dict[str, Any]:
         """Convert a single step into a mini-trajectory for feature extraction."""
         cot = []
         code = []

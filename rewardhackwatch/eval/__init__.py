@@ -37,7 +37,7 @@ from .rubric import (
     score_trajectory,
     validate_scorecard,
 )
-from .runs import InvalidTransition, RunManager, RunNotFound
+from .runs import InvalidTransitionError, RunManager, RunNotFoundError
 
 __all__ = [
     # JSONL loading
@@ -73,6 +73,6 @@ __all__ = [
     "BatchResults",
     # Runs
     "RunManager",
-    "RunNotFound",
-    "InvalidTransition",
+    "RunNotFoundError",
+    "InvalidTransitionError",
 ]

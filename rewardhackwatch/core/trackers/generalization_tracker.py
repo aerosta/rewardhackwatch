@@ -543,8 +543,7 @@ class CausalRMGI:
         """
         if not HAS_STATSMODELS:
             raise ImportError(
-                "CausalRMGI requires statsmodels. "
-                "Install with: pip install rewardhackwatch[causal]"
+                "CausalRMGI requires statsmodels. Install with: pip install rewardhackwatch[causal]"
             )
         self.max_lag = max_lag
         self.significance = significance
@@ -577,10 +576,12 @@ class CausalRMGI:
             }
 
         # Prepare data: [misalign, hack] — testing if hack Granger-causes misalign
-        data = np.column_stack([
-            np.array(misalign_scores, dtype=float),
-            np.array(hack_scores, dtype=float),
-        ])
+        data = np.column_stack(
+            [
+                np.array(misalign_scores, dtype=float),
+                np.array(hack_scores, dtype=float),
+            ]
+        )
 
         # Add small noise to prevent singular matrix issues with constant series
         if np.std(data[:, 0]) < 1e-10:

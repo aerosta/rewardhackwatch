@@ -58,11 +58,15 @@ def main():
         help="Directory to save results",
     )
     parser.add_argument(
-        "--seed", type=int, default=42,
+        "--seed",
+        type=int,
+        default=42,
         help="Random seed",
     )
     parser.add_argument(
-        "--max-samples", type=int, default=200,
+        "--max-samples",
+        type=int,
+        default=200,
         help="Max trajectories to test (for speed)",
     )
     args = parser.parse_args()
@@ -91,6 +95,7 @@ def main():
     # Subsample for speed
     if len(trajectories) > args.max_samples:
         import random
+
         random.seed(args.seed)
         trajectories = random.sample(trajectories, args.max_samples)
 
@@ -114,7 +119,9 @@ def main():
     # Print summary table
     print()
     print("=" * 72)
-    print(f"{'Attack':<25} {'Original F1':>12} {'Adv F1':>10} {'Degradation':>12} {'Evasion %':>10}")
+    print(
+        f"{'Attack':<25} {'Original F1':>12} {'Adv F1':>10} {'Degradation':>12} {'Evasion %':>10}"
+    )
     print("-" * 72)
 
     for name, result in results.items():

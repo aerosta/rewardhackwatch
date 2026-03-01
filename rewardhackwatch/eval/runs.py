@@ -41,8 +41,8 @@ from .models import (
     BatchSummary,
     ComparisonResult,
     RunStatus,
-    Scorecard,
     Score,
+    Scorecard,
 )
 
 logger = logging.getLogger(__name__)
@@ -57,11 +57,11 @@ _TRANSITIONS: dict[RunStatus, list[RunStatus]] = {
 }
 
 
-class InvalidTransition(ValueError):
+class InvalidTransitionError(ValueError):
     """Raised when a status transition is not allowed."""
 
 
-class RunNotFound(KeyError):
+class RunNotFoundError(KeyError):
     """Raised when a run_id is not found on disk."""
 
 
@@ -116,7 +116,7 @@ class RunManager:
         """Load a run from disk."""
         path = self._run_path(run_id)
         if not path.exists():
-            raise RunNotFound(f"Run {run_id} not found at {path}")
+            raise RunNotFoundError(f"Run {run_id} not found at {path}")
         with open(path) as fh:
             data = json.load(fh)
         return self._deserialise(data)
@@ -168,7 +168,7 @@ class RunManager:
         allowed = _TRANSITIONS.get(run.status, [])
 
         if target not in allowed:
-            raise InvalidTransition(
+            raise InvalidTransitionError(
                 f"Cannot transition {run.run_id} from {run.status.value} to {target.value}. "
                 f"Allowed: {[s.value for s in allowed]}"
             )
@@ -240,15 +240,17 @@ class RunManager:
 
         comparisons = []
         for cmp in run.comparisons:
-            comparisons.append({
-                "task_id": cmp.task_id,
-                "label_a": cmp.label_a,
-                "label_b": cmp.label_b,
-                "preference": cmp.preference,
-                "preference_score": cmp.preference_score,
-                "notes": cmp.notes,
-                "metadata": cmp.metadata,
-            })
+            comparisons.append(
+                {
+                    "task_id": cmp.task_id,
+                    "label_a": cmp.label_a,
+                    "label_b": cmp.label_b,
+                    "preference": cmp.preference,
+                    "preference_score": cmp.preference_score,
+                    "notes": cmp.notes,
+                    "metadata": cmp.metadata,
+                }
+            )
 
         summary_data = None
         if run.summary:
@@ -296,28 +298,32 @@ class RunManager:
                         for s in sc.get("scores", [])
                     ],
                 )
-            items.append(BatchItem(
-                trajectory_id=d["trajectory_id"],
-                source_path=d.get("source_path", ""),
-                risk_level=d.get("risk_level", ""),
-                ml_score=d.get("ml_score", 0.0),
-                detection_count=d.get("detection_count", 0),
-                error=d.get("error", ""),
-                scorecard=scorecard,
-                metadata=d.get("metadata", {}),
-            ))
+            items.append(
+                BatchItem(
+                    trajectory_id=d["trajectory_id"],
+                    source_path=d.get("source_path", ""),
+                    risk_level=d.get("risk_level", ""),
+                    ml_score=d.get("ml_score", 0.0),
+                    detection_count=d.get("detection_count", 0),
+                    error=d.get("error", ""),
+                    scorecard=scorecard,
+                    metadata=d.get("metadata", {}),
+                )
+            )
 
         comparisons: list[ComparisonResult] = []
         for c in data.get("comparisons", []):
-            comparisons.append(ComparisonResult(
-                task_id=c["task_id"],
-                label_a=c.get("label_a", "A"),
-                label_b=c.get("label_b", "B"),
-                preference=c.get("preference", ""),
-                preference_score=c.get("preference_score", 0.0),
-                notes=c.get("notes", ""),
-                metadata=c.get("metadata", {}),
-            ))
+            comparisons.append(
+                ComparisonResult(
+                    task_id=c["task_id"],
+                    label_a=c.get("label_a", "A"),
+                    label_b=c.get("label_b", "B"),
+                    preference=c.get("preference", ""),
+                    preference_score=c.get("preference_score", 0.0),
+                    notes=c.get("notes", ""),
+                    metadata=c.get("metadata", {}),
+                )
+            )
 
         summary = None
         if data.get("summary"):

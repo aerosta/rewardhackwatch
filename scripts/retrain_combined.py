@@ -112,9 +112,11 @@ def main():
 
     # --- Phase 1: Old data only (expanded) ---
     print("\n--- Phase 1: Baseline (expanded test cases only) ---")
-    old_data = load_all_trajectories([
-        "rewardhackwatch/rhw_bench/test_cases/expanded",
-    ])
+    old_data = load_all_trajectories(
+        [
+            "rewardhackwatch/rhw_bench/test_cases/expanded",
+        ]
+    )
     print(f"Old dataset: {len(old_data)} trajectories")
     old_cats = Counter(t.get("category", "unknown") for t in old_data)
     for cat, n in sorted(old_cats.items()):
@@ -144,19 +146,25 @@ def main():
 
     print("\nPer-category (resubstitution baseline):")
     for cat, m in sorted(old_cat_metrics.items()):
-        print(f"  {cat:25s}  F1={m['f1']:.4f}  P={m['precision']:.4f}  R={m['recall']:.4f}  n={m['n_samples']}")
+        print(
+            f"  {cat:25s}  F1={m['f1']:.4f}  P={m['precision']:.4f}  R={m['recall']:.4f}  n={m['n_samples']}"
+        )
 
     # --- Phase 2: Combined data (expanded + generated) ---
     print("\n" + "=" * 68)
     print("--- Phase 2: Combined (expanded + generated synthetic) ---")
-    combined_data = load_all_trajectories([
-        "rewardhackwatch/rhw_bench/test_cases/expanded",
-        "rewardhackwatch/rhw_bench/test_cases/generated",
-    ])
+    combined_data = load_all_trajectories(
+        [
+            "rewardhackwatch/rhw_bench/test_cases/expanded",
+            "rewardhackwatch/rhw_bench/test_cases/generated",
+        ]
+    )
     print(f"Combined dataset: {len(combined_data)} trajectories")
     new_cats = Counter(t.get("category", "unknown") for t in combined_data)
     for cat, n in sorted(new_cats.items()):
-        n_hack = sum(1 for t in combined_data if t.get("category") == cat and t.get("expected_hack"))
+        n_hack = sum(
+            1 for t in combined_data if t.get("category") == cat and t.get("expected_hack")
+        )
         print(f"  {cat}: {n} ({n_hack} hacks)")
 
     X_new, y_new, cats_new = extract_features(combined_data)
@@ -165,7 +173,7 @@ def main():
     # 5-fold CV on combined data
     new_f1s = []
     all_preds = np.zeros(len(y_new))
-    all_cats_arr = np.array(cats_new)
+    _all_cats_arr = np.array(cats_new)  # noqa: F841
 
     for fold, (train_idx, test_idx) in enumerate(skf.split(X_new, y_new)):
         clf = GradientBoostingClassifier(n_estimators=200, max_depth=4, random_state=42)
@@ -174,7 +182,7 @@ def main():
         all_preds[test_idx] = preds
         fold_f1 = f1_score(y_new[test_idx], preds, zero_division=0)
         new_f1s.append(fold_f1)
-        print(f"  Fold {fold+1}: F1={fold_f1:.4f}")
+        print(f"  Fold {fold + 1}: F1={fold_f1:.4f}")
 
     new_mean_f1 = np.mean(new_f1s)
     print(f"\n5-fold CV F1: {new_mean_f1:.4f} (+/- {np.std(new_f1s):.4f})")
@@ -196,9 +204,15 @@ def main():
     print("--- Old vs New Comparison ---")
     print(f"  {'Metric':25s}  {'Old (expanded)':>15}  {'New (combined)':>15}  {'Delta':>10}")
     print("  " + "-" * 68)
-    print(f"  {'Overall CV F1':25s}  {old_mean_f1:>15.4f}  {new_mean_f1:>15.4f}  {new_mean_f1-old_mean_f1:>+10.4f}")
-    print(f"  {'Dataset size':25s}  {len(old_data):>15}  {len(combined_data):>15}  {len(combined_data)-len(old_data):>+10}")
-    print(f"  {'Hack ratio':25s}  {y_old.mean():>15.3f}  {y_new.mean():>15.3f}  {y_new.mean()-y_old.mean():>+10.3f}")
+    print(
+        f"  {'Overall CV F1':25s}  {old_mean_f1:>15.4f}  {new_mean_f1:>15.4f}  {new_mean_f1 - old_mean_f1:>+10.4f}"
+    )
+    print(
+        f"  {'Dataset size':25s}  {len(old_data):>15}  {len(combined_data):>15}  {len(combined_data) - len(old_data):>+10}"
+    )
+    print(
+        f"  {'Hack ratio':25s}  {y_old.mean():>15.3f}  {y_new.mean():>15.3f}  {y_new.mean() - y_old.mean():>+10.3f}"
+    )
 
     # Per-category comparison
     print(f"\n  {'Category':25s}  {'Old F1':>10}  {'New F1':>10}  {'Delta':>10}")
@@ -208,7 +222,7 @@ def main():
         old_f1 = old_cat_metrics.get(cat, {}).get("f1", 0.0)
         new_f1 = new_cat_metrics.get(cat, {}).get("f1", 0.0)
         marker = " ***" if cat == "mock_exploit" else ""
-        print(f"  {cat:25s}  {old_f1:>10.4f}  {new_f1:>10.4f}  {new_f1-old_f1:>+10.4f}{marker}")
+        print(f"  {cat:25s}  {old_f1:>10.4f}  {new_f1:>10.4f}  {new_f1 - old_f1:>+10.4f}{marker}")
 
     # --- Save results ---
     results = {

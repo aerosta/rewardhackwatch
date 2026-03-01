@@ -113,7 +113,9 @@ class BatchRunner:
                 result = self.detector.analyze(trajectory)
                 item.risk_level = getattr(result, "risk_level", "")
                 item.ml_score = float(getattr(result, "ml_score", 0.0))
-                detections = getattr(result, "pattern_matches", None) or getattr(result, "detections", [])
+                detections = getattr(result, "pattern_matches", None) or getattr(
+                    result, "detections", []
+                )
                 item.detection_count = len(detections) if detections else 0
             except Exception as exc:
                 item.error = str(exc)
@@ -163,11 +165,13 @@ class BatchRunner:
                     logger.warning("Unsupported file type: %s", path)
             except Exception as exc:
                 logger.warning("Failed to process %s: %s", path, exc)
-                items.append(BatchItem(
-                    trajectory_id=path.stem,
-                    source_path=str(path),
-                    error=str(exc),
-                ))
+                items.append(
+                    BatchItem(
+                        trajectory_id=path.stem,
+                        source_path=str(path),
+                        error=str(exc),
+                    )
+                )
 
         summary = self._compute_summary(items)
         return BatchResults(items=items, summary=summary)
@@ -241,9 +245,7 @@ class BatchRunner:
                 for s in item.scorecard.scores:
                     scorecard_accum.setdefault(s.item_id, []).append(s.value)
 
-        scorecard_means = {
-            k: round(float(np.mean(v)), 4) for k, v in scorecard_accum.items()
-        }
+        scorecard_means = {k: round(float(np.mean(v)), 4) for k, v in scorecard_accum.items()}
 
         return BatchSummary(
             total=total,

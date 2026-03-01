@@ -346,7 +346,9 @@ def dashboard():
 def calibrate(
     clean_dir: Path = typer.Argument(..., help="Directory of clean trajectory JSON files"),
     percentile: float = typer.Option(99.0, "--percentile", "-p", help="Percentile threshold"),
-    method: str = typer.Option("percentile", "--method", "-m", help="Method: percentile or mean_std"),
+    method: str = typer.Option(
+        "percentile", "--method", "-m", help="Method: percentile or mean_std"
+    ),
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Save calibration result"),
 ):
     """
@@ -439,8 +441,16 @@ def serve(
 
     console.print(f"[bold blue]Starting RewardHackWatch API on {host}:{port}[/bold blue]")
     subprocess.run(
-        [sys.executable, "-m", "uvicorn", "rewardhackwatch.api.main:app",
-         "--host", host, "--port", str(port)]
+        [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "rewardhackwatch.api.main:app",
+            "--host",
+            host,
+            "--port",
+            str(port),
+        ]
     )
 
 

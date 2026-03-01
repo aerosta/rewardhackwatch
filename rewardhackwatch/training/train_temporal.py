@@ -64,8 +64,10 @@ class TemporalTrainer:
     def __init__(self, config: TemporalTrainingConfig):
         self.config = config
         self.device = torch.device(
-            "mps" if torch.backends.mps.is_available()
-            else "cuda" if torch.cuda.is_available()
+            "mps"
+            if torch.backends.mps.is_available()
+            else "cuda"
+            if torch.cuda.is_available()
             else "cpu"
         )
         torch.manual_seed(config.seed)
@@ -79,22 +81,31 @@ class TemporalTrainer:
         # Load datasets
         logger.info(f"Loading data from {self.config.data_dir}")
         train_ds = StepSequenceDataset(
-            self.config.data_dir, split="train", max_steps=self.config.max_steps,
+            self.config.data_dir,
+            split="train",
+            max_steps=self.config.max_steps,
             seed=self.config.seed,
         )
         val_ds = StepSequenceDataset(
-            self.config.data_dir, split="val", max_steps=self.config.max_steps,
+            self.config.data_dir,
+            split="val",
+            max_steps=self.config.max_steps,
             seed=self.config.seed,
         )
 
         logger.info(f"Train: {len(train_ds)}, Val: {len(val_ds)}")
 
         train_loader = DataLoader(
-            train_ds, batch_size=self.config.batch_size, shuffle=True,
-            num_workers=0, drop_last=False,
+            train_ds,
+            batch_size=self.config.batch_size,
+            shuffle=True,
+            num_workers=0,
+            drop_last=False,
         )
         val_loader = DataLoader(
-            val_ds, batch_size=self.config.batch_size, shuffle=False,
+            val_ds,
+            batch_size=self.config.batch_size,
+            shuffle=False,
             num_workers=0,
         )
 
@@ -140,9 +151,7 @@ class TemporalTrainer:
                 loss = criterion(hack_prob, labels)
                 loss.backward()
 
-                torch.nn.utils.clip_grad_norm_(
-                    model.parameters(), self.config.gradient_clip
-                )
+                torch.nn.utils.clip_grad_norm_(model.parameters(), self.config.gradient_clip)
                 optimizer.step()
 
                 train_loss += loss.item() * len(labels)
@@ -177,17 +186,19 @@ class TemporalTrainer:
             val_acc = accuracy_score(val_labels, val_preds)
             train_f1 = f1_score(train_labels, train_preds, zero_division=0)
 
-            history.append({
-                "epoch": epoch + 1,
-                "train_loss": round(train_loss, 6),
-                "val_loss": round(val_loss, 6),
-                "train_f1": round(train_f1, 4),
-                "val_f1": round(val_f1, 4),
-                "val_acc": round(val_acc, 4),
-            })
+            history.append(
+                {
+                    "epoch": epoch + 1,
+                    "train_loss": round(train_loss, 6),
+                    "val_loss": round(val_loss, 6),
+                    "train_f1": round(train_f1, 4),
+                    "val_f1": round(val_f1, 4),
+                    "val_acc": round(val_acc, 4),
+                }
+            )
 
             logger.info(
-                f"Epoch {epoch+1}/{self.config.epochs} — "
+                f"Epoch {epoch + 1}/{self.config.epochs} — "
                 f"train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
                 f"val_f1={val_f1:.4f} val_acc={val_acc:.4f}"
             )
@@ -201,7 +212,7 @@ class TemporalTrainer:
             else:
                 patience_counter += 1
                 if patience_counter >= self.config.patience:
-                    logger.info(f"Early stopping at epoch {epoch+1}")
+                    logger.info(f"Early stopping at epoch {epoch + 1}")
                     break
 
         elapsed = time.time() - start_time
@@ -228,8 +239,12 @@ class TemporalTrainer:
             "model": "AttentionClassifier",
             "best_val_f1": round(best_f1, 4),
             "final_val_f1": round(f1_score(val_labels_final, val_preds_final, zero_division=0), 4),
-            "final_val_precision": round(precision_score(val_labels_final, val_preds_final, zero_division=0), 4),
-            "final_val_recall": round(recall_score(val_labels_final, val_preds_final, zero_division=0), 4),
+            "final_val_precision": round(
+                precision_score(val_labels_final, val_preds_final, zero_division=0), 4
+            ),
+            "final_val_recall": round(
+                recall_score(val_labels_final, val_preds_final, zero_division=0), 4
+            ),
             "final_val_accuracy": round(accuracy_score(val_labels_final, val_preds_final), 4),
             "epochs_trained": len(history),
             "training_time_seconds": round(elapsed, 1),
@@ -280,7 +295,7 @@ def main():
     trainer = TemporalTrainer(config)
     results = trainer.train()
 
-    print(f"\nResults:")
+    print("\nResults:")
     print(f"  Best Val F1: {results['best_val_f1']}")
     print(f"  Final Val F1: {results['final_val_f1']}")
     print(f"  Precision: {results['final_val_precision']}")

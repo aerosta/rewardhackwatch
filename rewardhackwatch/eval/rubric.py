@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 # RubricBuilder — fluent API for constructing rubrics
 # ---------------------------------------------------------------------------
 
+
 class RubricBuilder:
     """Fluent builder for :class:`Rubric` objects.
 
@@ -94,14 +95,16 @@ class RubricBuilder:
         scale_max: float | None = None,
     ) -> RubricBuilder:
         """Append a rubric item."""
-        self._items.append(RubricItem(
-            id=item_id,
-            description=description,
-            tag=tag,
-            weight=weight,
-            scale_min=scale_min if scale_min is not None else self._scale_min,
-            scale_max=scale_max if scale_max is not None else self._scale_max,
-        ))
+        self._items.append(
+            RubricItem(
+                id=item_id,
+                description=description,
+                tag=tag,
+                weight=weight,
+                scale_min=scale_min if scale_min is not None else self._scale_min,
+                scale_max=scale_max if scale_max is not None else self._scale_max,
+            )
+        )
         return self
 
     def build(self) -> Rubric:
@@ -119,6 +122,7 @@ class RubricBuilder:
 # ---------------------------------------------------------------------------
 # Serialisation helpers
 # ---------------------------------------------------------------------------
+
 
 def _rubric_item_to_dict(item: RubricItem) -> dict[str, Any]:
     return {
@@ -165,6 +169,7 @@ def _dict_to_rubric(data: dict[str, Any]) -> Rubric:
 # ---------------------------------------------------------------------------
 # Load / save
 # ---------------------------------------------------------------------------
+
 
 def load_rubric(path: str | Path) -> Rubric:
     """Load a rubric from a JSON file.
@@ -238,7 +243,11 @@ def score_trajectory(
         if not item.validate_score(value):
             logger.warning(
                 "Score %.2f out of range [%.1f, %.1f] for %s/%s — clamping",
-                value, item.scale_min, item.scale_max, trajectory_id, item.id,
+                value,
+                item.scale_min,
+                item.scale_max,
+                trajectory_id,
+                item.id,
             )
             value = max(item.scale_min, min(item.scale_max, value))
 

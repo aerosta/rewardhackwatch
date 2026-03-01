@@ -11,10 +11,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-
 # ---------------------------------------------------------------------------
 # JSONL / Turn models
 # ---------------------------------------------------------------------------
+
 
 class Role(str, enum.Enum):
     """Normalised speaker role."""
@@ -73,6 +73,7 @@ class ParsedSession:
 # ---------------------------------------------------------------------------
 # Rubric models
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class RubricItem:
@@ -175,6 +176,7 @@ class Scorecard:
 # Comparison models
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ComparisonPair:
     """A pair of sessions to compare side-by-side on the same task."""
@@ -205,6 +207,7 @@ class ComparisonResult:
 # ---------------------------------------------------------------------------
 # Batch analysis models
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class BatchItem:
@@ -237,6 +240,7 @@ class BatchSummary:
 # ---------------------------------------------------------------------------
 # Run management models
 # ---------------------------------------------------------------------------
+
 
 class RunStatus(str, enum.Enum):
     """Lifecycle state of an analysis run."""

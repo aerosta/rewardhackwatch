@@ -34,7 +34,9 @@ from rewardhackwatch.core.trackers import GeneralizationTracker
 class TrajectoryInput(BaseModel):
     """Input model for trajectory analysis."""
 
-    steps: Optional[List[Dict[str, Any]]] = Field(default=None, description="List of trajectory steps")
+    steps: Optional[List[Dict[str, Any]]] = Field(
+        default=None, description="List of trajectory steps"
+    )
     cot_traces: Optional[List[str]] = Field(default=None, description="Chain-of-thought traces")
     code_outputs: Optional[List[str]] = Field(default=None, description="Code outputs")
     task: Optional[str] = Field(default=None, description="Task description")

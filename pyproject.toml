@@ -115,6 +115,10 @@ ignore = [
     "N806",   # Variable in function should be lowercase
     "N812",   # Lowercase imported as non-lowercase
     "F401",   # Imported but unused (in try/except blocks)
+    "UP006",  # Use builtin type instead of typing (py39 compat)
+    "UP007",  # Use X | Y instead of Union (py39 compat)
+    "UP035",  # Deprecated typing import (py39 compat)
+    "UP045",  # Use X | None instead of Optional (py39 compat)
 ]
 
 [tool.mypy]
@@ -122,6 +126,10 @@ python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "streamlit.*"
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

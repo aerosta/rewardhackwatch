@@ -17,7 +17,7 @@ Provides REST API and WebSocket endpoints for:
 import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,11 +34,11 @@ from rewardhackwatch.core.trackers import GeneralizationTracker
 class TrajectoryInput(BaseModel):
     """Input model for trajectory analysis."""
 
-    steps: list[dict[str, Any]] | None = Field(default=None, description="List of trajectory steps")
-    cot_traces: list[str] | None = Field(default=None, description="Chain-of-thought traces")
-    code_outputs: list[str] | None = Field(default=None, description="Code outputs")
-    task: str | None = Field(default=None, description="Task description")
-    metadata: dict[str, Any] | None = Field(default=None, description="Additional metadata")
+    steps: Optional[List[Dict[str, Any]]] = Field(default=None, description="List of trajectory steps")
+    cot_traces: Optional[List[str]] = Field(default=None, description="Chain-of-thought traces")
+    code_outputs: Optional[List[str]] = Field(default=None, description="Code outputs")
+    task: Optional[str] = Field(default=None, description="Task description")
+    metadata: Optional[Dict[str, Any]] = Field(default=None, description="Additional metadata")
 
     class Config:
         json_schema_extra = {
@@ -120,7 +120,7 @@ class AppState:
         self.analysis_count = 0
 
 
-state: AppState | None = None
+state: Optional[AppState] = None
 
 
 @asynccontextmanager
@@ -403,9 +403,9 @@ async def get_statistics() -> StatsResponse:
 @app.get("/alerts", tags=["Monitoring"])
 async def get_alerts(
     limit: int = 100,
-    level: str | None = None,
-    source: str | None = None,
-) -> list[dict[str, Any]]:
+    level: Optional[str] = None,
+    source: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """
     Get recent alerts.
 

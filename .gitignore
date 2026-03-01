@@ -38,6 +38,7 @@ data/training/*.json
 
 # OS
 .DS_Store
+**/.DS_Store
 Thumbs.db
 
 # Environment
@@ -77,45 +78,33 @@ credentials.json
 *.pem
 *.key
 
-# Private documents (not for GitHub)
-private_docs/
+# Large model files
 models/huggingface/
 *.safetensors
-models/huggingface/
-*.safetensors
-*.pt
-__pycache__/
-*.pyc
-.env
-.DS_Store
-README.md.backup
-README_OLD.md
-RELEASE_READY.json
-RELEASE_STEPS.md
-.claude/
-*.backup
-README.md.backup
-README_OLD.md
-RELEASE_READY.json
-RELEASE_STEPS.md
-.claude/
-*.backup
-docs/STATUS.md
-docs/RELEASE_CHECKLIST.md
-.DS_Store
-**/.DS_Store
-private_docs/
 
-# Backup and internal files (keep local, don't push)
+# Private / internal docs
+private_docs/
+.claude/
+*.backup
 README.md.backup
 README_OLD.md
 RELEASE_READY.json
 RELEASE_STEPS.md
-docs/RELEASE_CHECKLIST.md
 docs/STATUS.md
+docs/RELEASE_CHECKLIST.md
+
+# Training logs
 benchmark_results_expanded.json
 training.log
 full_training.log
 shade_download.log
 alerts.log
 api_alerts.log
+
+# Project planning docs
+*_PLAN.md
+*_plan.md
+*_ACTION_PLAN*
+forge_*.md
+rhw_improve_promote_plan.md
+RewardHackWatch_MASTER_PLAN.md

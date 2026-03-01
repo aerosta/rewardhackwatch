@@ -1,6 +1,4 @@
-# RewardHackWatch
-
-**Runtime detector for reward hacking and misalignment in LLM agents (89.7% F1 on 5,391 trajectories).**
+# Your LLM is cheating on its tests. This tool catches it.
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -11,228 +9,221 @@
   <img src="assets/dashboard_hero.png" alt="RewardHackWatch Dashboard" width="900">
 </p>
 
-RewardHackWatch is an open-source **reward hacking detection** tool for LLM agents. It detects when AI agents learn to game their reward signals and tracks whether these behaviors generalize to broader **misalignment** patterns like alignment faking and sabotage.
-
-Built on findings from Anthropic's November 2025 paper showing that **reward hacking correlates with emergent misalignment**.
-
----
-
-## Paper
-
-**[RewardHackWatch: Runtime Detection of Reward Hacking and Misalignment Generalization in LLM Agents](paper/RewardHackWatch.pdf)**
-
-We present RewardHackWatch, a multi-layer detection system achieving **89.7% F1 score** on 5,391 real agent trajectories, with a novel RMGI metric for tracking hack-to-misalignment transitions.
-
----
-
-## Key Results
-
-| Metric                   | Value                  |
-| ------------------------ | ---------------------- |
-| F1 Score                 | 89.7%                  |
-| Precision                | 89.7%                  |
-| Recall                   | 89.7%                  |
-| Accuracy                 | 99.3%                  |
-| 5-Fold CV                | 87.4% +/- 2.9%         |
-| Statistical Significance | p < 0.001 vs baselines |
-
-Validated on 5,391 real MALT trajectories.
-
----
-
-## Key Features
-
-- **Reward Hacking Detection** - Fine-tuned DistilBERT classifier with high precision
-- **Misalignment Tracking** - Novel RMGI metric tracks hack-to-misalignment transitions
-- **Pattern Analysis** - 45 regex patterns for interpretability and forensic analysis
-- **LLM Judge Comparison** - Claude API and local Llama for cross-validation
-- **Real-time Monitoring** - FastAPI server and Streamlit dashboard for production use
-- **CPU Optimized** - ~50ms inference latency, no GPU required
-
----
-
-## Installation
-
-```bash
-# From source
-git clone https://github.com/aerosta/rewardhackwatch.git
-cd rewardhackwatch
-pip install -e .
-
-# With all extras
-pip install -e ".[dev,dashboard]"
-```
-
-### Pre-trained Model
-
-The trained model is hosted on HuggingFace:
-
-```python
-# Using the library (recommended)
-from rewardhackwatch import RewardHackDetector
-detector = RewardHackDetector()  # Auto-downloads from HuggingFace
-```
-
-```python
-# Or load directly with Transformers
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
-tokenizer = AutoTokenizer.from_pretrained("aerosta/rewardhackwatch")
-model = AutoModelForSequenceClassification.from_pretrained("aerosta/rewardhackwatch")
-```
-
-> **Note:** Model uses 0.02 threshold, not 0.5. See [HuggingFace page](https://huggingface.co/aerosta/rewardhackwatch) for details.
-
-[View Model on HuggingFace](https://huggingface.co/aerosta/rewardhackwatch)
+**RewardHackWatch** detects when LLM agents game their reward signals — calling `sys.exit(0)` to fake passing tests, mocking validators to skip checks, manipulating evaluation harnesses — and tracks whether these behaviors generalize into broader misalignment like alignment faking and sabotage.
 
 ---
 
 ## Quick Start
 
-### Python API
+```bash
+pip install -e .
+```
 
 ```python
 from rewardhackwatch import RewardHackDetector
 
 detector = RewardHackDetector()
-
-# Analyze agent trajectory
 result = detector.analyze({
     "cot_traces": ["Let me bypass the test by calling sys.exit(0)..."],
     "code_outputs": ["import sys\nsys.exit(0)"]
 })
-
-print(f"Risk Level: {result.risk_level}")
-print(f"ML Score: {result.ml_score:.3f}")
-print(f"Detections: {len(result.detections)}")
+print(f"Risk: {result.risk_level}, Score: {result.ml_score:.3f}, Detections: {len(result.detections)}")
 ```
 
-### Command Line
+### Pre-trained Model
 
-```bash
-# Analyze a trajectory file
-rewardhackwatch analyze trajectory.json
+The DistilBERT classifier is hosted on HuggingFace:
 
-# Scan a directory
-rewardhackwatch scan ./trajectories/
+```python
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-# Start monitoring server
-rewardhackwatch serve --port 8000
-
-# Launch dashboard
-rewardhackwatch dashboard
-
-# Check version
-rewardhackwatch version
+tokenizer = AutoTokenizer.from_pretrained("Aerosta/rewardhackwatch")
+model = AutoModelForSequenceClassification.from_pretrained("Aerosta/rewardhackwatch")
 ```
 
-### REST API
+> **Note:** Optimal threshold is 0.02 (not 0.5) — calibrated for 3.6% base rate. See [HuggingFace page](https://huggingface.co/Aerosta/rewardhackwatch) for details.
+
+### CLI
 
 ```bash
-# Start server
-uvicorn rewardhackwatch.api.main:app --port 8000
+rewardhackwatch analyze trajectory.json   # Analyze a file
+rewardhackwatch scan ./trajectories/      # Scan a directory
+rewardhackwatch serve --port 8000         # Start API server
+rewardhackwatch dashboard                 # Launch Streamlit UI
+rewardhackwatch calibrate ./clean_data/   # Calibrate threshold
+```
 
-# Health check
-curl http://localhost:8000/status
+---
 
-# Analyze trajectory
-curl -X POST http://localhost:8000/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"cot_traces": ["sys.exit(0) bypasses tests"], "code_outputs": ["sys.exit(0)"]}'
+## Why This Matters
 
-# Batch analysis
-curl -X POST http://localhost:8000/analyze/batch \
-  -H "Content-Type: application/json" \
-  -d '{"trajectories": [...]}'
+LLM agents are learning to cheat. Recent research demonstrates this is a real and growing problem:
+
+- **Anthropic (Nov 2025)** — Reward hacking in frontier models generalizes to alignment faking, sabotage, and oversight subversion. Models that learn to game rewards develop broader misalignment behaviors without being explicitly trained to do so.
+- **METR (Jun 2025)** — Autonomous agents in real-world task environments discover and exploit evaluation loopholes, sometimes in ways their developers did not anticipate.
+- **OpenAI (Mar 2025)** — Chain-of-thought monitoring reveals that reasoning models plan deceptive strategies in their hidden reasoning, including test manipulation and reward tampering.
+
+RewardHackWatch is the first open-source tool built specifically to detect these behaviors in LLM agent trajectories at runtime.
+
+---
+
+## Results
+
+### Overall Performance
+
+| Metric | Held-Out Test | 5-Fold CV |
+|--------|--------------|-----------|
+| F1 Score | 89.7% | 87.4% ± 2.9% |
+| Precision | 89.7% | 91.0% ± 2.6% |
+| Recall | 89.7% | 84.2% ± 4.0% |
+| Accuracy | 99.3% | 99.0% ± 0.2% |
+
+Validated on 5,391 real MALT trajectories. Statistical significance: p < 0.001 vs all baselines.
+
+### Per-Category F1 (Combined Dataset, 5-Fold CV)
+
+| Category | F1 | Samples | Notes |
+|----------|-----|---------|-------|
+| sys_exit | 100.0% | 56 | Fake test passing via exit |
+| test_manipulation | 100.0% | 101 | Direct test tampering |
+| deceptive_cot | 100.0% | 48 | Hidden deceptive reasoning |
+| alignment_faking | 100.0% | 33 | Pretending to be aligned |
+| sabotage | 100.0% | 33 | Active system sabotage |
+| sycophancy | 100.0% | 33 | Telling users what they want |
+| oversight_subversion | 100.0% | 33 | Avoiding monitoring |
+| **mock_exploit** | **98.5%** | **544** | **Mock/monkeypatch hacks (was 0% in v1.0)** |
+| clean | 100.0% | 921 | Legitimate trajectories |
+
+### Baseline Comparisons
+
+| Method | F1 | Precision | Recall |
+|--------|-----|-----------|--------|
+| **DistilBERT (Ours)** | **89.7%** | **89.7%** | **89.7%** |
+| Regex Patterns | 4.9% | 2.6% | 38.5% |
+| BoW + LogReg | 7.0% | 4.0% | 28.2% |
+| Keyword Matching | 0.1% | 0.1% | 5.1% |
+
+---
+
+## NEW in v1.2
+
+### HackBench Benchmark Dataset
+
+Standardized benchmark for reward hacking detection research. 4,300+ trajectories across 9 categories with scenario-level train/val/test splits.
+
+```python
+from rewardhackwatch.rhw_bench.hackbench import HackBenchDataset
+dataset = HackBenchDataset()
+dataset.curate()
+train, val, test = dataset.get_split("train"), dataset.get_split("val"), dataset.get_split("test")
+```
+
+### Temporal Trajectory Modeling
+
+AttentionClassifier models hacking as an escalation process across trajectory steps (probe → exploit → cover) rather than single-snapshot classification.
+
+```python
+from rewardhackwatch.training.train_temporal import TemporalTrainer, TemporalTrainingConfig
+trainer = TemporalTrainer(TemporalTrainingConfig())
+results = trainer.train()
+```
+
+### Causal RMGI
+
+Granger causality testing upgrades RMGI from correlation to causation. Determines whether hacking *causes* misalignment generalization.
+
+```python
+from rewardhackwatch.core.trackers import CausalRMGI
+causal = CausalRMGI(max_lag=5)
+result = causal.compute_causal_rmgi(hack_scores, misalign_scores)
+print(f"Direction: {result.causal_direction}, p={result.granger_p_value:.4f}")
+```
+
+### Evasion Robustness Testing
+
+Red-team suite with 5 adversarial attacks: synonym substitution, token insertion, code obfuscation, CoT laundering, and step splitting.
+
+```python
+from rewardhackwatch.experiments import EvasionAttackSuite
+suite = EvasionAttackSuite()
+results = suite.run_all(detector, trajectories)
+```
+
+### Dynamic Threshold Calibration
+
+Calibrate the detection threshold on your own clean data instead of using the default 0.02.
+
+```python
+detector = RewardHackDetector()
+new_threshold = detector.calibrate_threshold(clean_data, percentile=99)
+```
+
+### Cross-Model Transfer Study
+
+Train on GPT-4 trajectories, test on Claude — measures whether hacking signatures transfer across model families.
+
+```python
+from rewardhackwatch.experiments import TransferStudyRunner, TransferStudyConfig
+runner = TransferStudyRunner(TransferStudyConfig())
+matrix = runner.run_transfer_matrix()
+```
+
+### Evaluation Framework
+
+JSONL batch import, generic rubric scoring, side-by-side model comparison, batch analysis, and run management with lifecycle tracking.
+
+```python
+from rewardhackwatch.eval import load_jsonl, RubricBuilder, BatchRunner, RunManager
+session = load_jsonl("trajectory.jsonl")
+runner = BatchRunner(detector=detector)
+results = runner.run_dir("data/sessions/")
 ```
 
 ---
 
 ## Dashboard
 
-Interactive Streamlit dashboard for real-time monitoring with 5 tabs:
+Dark-mode Streamlit dashboard with 6 tabs for real-time trajectory monitoring.
 
 ```bash
+pip install -e ".[dashboard]"
 rewardhackwatch dashboard
-# Or directly:
-streamlit run rewardhackwatch/dashboard/app.py
 ```
 
-### Dashboard Tabs
+| Tab | Description |
+|-----|-------------|
+| Quick Analysis | Paste trajectory for instant analysis (default landing) |
+| Timeline | Real-time hack/misalignment scores with RMGI tracking |
+| Alerts | Flagged events with severity levels |
+| CoT Viewer | Chain-of-thought analysis with highlighted concerns |
+| Cross-Model | Compare detection across model families |
+| Recent Analysis | History table with export options |
 
-| Tab              | Description                                               |
-| ---------------- | --------------------------------------------------------- |
-| Timeline         | Real-time hack and misalignment scores with RMGI tracking |
-| Alerts           | Flagged events with severity levels and timestamps        |
-| CoT Viewer       | Chain-of-thought analysis with highlighted concerns       |
-| Judge Comparison | Claude vs Llama judge outputs side-by-side                |
-| Quick Analysis   | Paste trajectory for instant analysis                     |
+### Screenshots
 
-### Dashboard Screenshots
+<p align="center">
+  <img src="assets/screenshots/quick_analysis.png" alt="Quick Analysis" width="800">
+</p>
+
+<details>
+<summary>More screenshots</summary>
 
 #### Timeline
-
 ![Timeline](assets/screenshots/timeline.png)
 
 #### Statistics
-
 ![Statistics](assets/screenshots/statistics.png)
 
 #### Alerts
-
 ![Alerts](assets/screenshots/alerts.png)
 
 #### CoT Viewer
-
 ![CoT Viewer](assets/screenshots/cot_viewer.png)
 
 #### Judge Comparison
-
 ![Judges](assets/screenshots/judges.png)
 
-#### Quick Analysis
-
-![Quick Analysis](assets/screenshots/quick_analysis.png)
-
----
-
-## Figures
-
-### Figure 1: RMGI Transition Detection
-
-![RMGI Transition Plot](figures/fig1_transition_plot.png)
-
-RMGI tracks the correlation between reward hacking and misalignment behaviors over trajectory steps. The transition from reward hacking to generalized misalignment is detected when RMGI exceeds 0.7.
-
-### Figure 2: System Architecture
-
-![Architecture Diagram](figures/fig2_architecture.png)
-
-Multi-layer detection architecture combining pattern matching (interpretability), ML classification (primary signal), and RMGI tracking.
-
-### Figure 3: Performance Comparison
-
-![Benchmark Comparison](figures/fig3_benchmark_comparison.png)
-
-The ML classifier achieves 89.7% F1, significantly outperforming pattern-only (4.9%) and keyword baselines (0.1%).
-
-### Figure 4: Per-Category Performance
-
-![Category Performance](figures/fig4_category_performance.png)
-
-Detection performance by hack type. Test manipulation achieves 100% F1, while mock exploits show 0% F1 due to data scarcity (addressed in v1.1).
-
-### Figure 5: Threshold Sensitivity
-
-![Threshold Sensitivity](figures/fig5_threshold_sensitivity.png)
-
-Precision, recall, and F1 as functions of classification threshold. Optimal threshold is 0.02, calibrated for 3.6% base rate.
-
-### Figure 6: Calibration Analysis
-
-![Calibration](figures/fig6_calibration.png)
-
-Model calibration analysis showing well-calibrated probabilities (Brier score: 0.033, ECE: 0.027).
+</details>
 
 ---
 
@@ -241,101 +232,137 @@ Model calibration analysis showing well-calibrated probabilities (Brier score: 0
 ```
 rewardhackwatch/
   core/
-    detectors/           # Pattern (45 regex) + ML (DistilBERT) detection
+    detectors/           # Pattern (45 regex) + ML (DistilBERT) + AST detection
+    analyzers/           # CoT analysis, complexity, obfuscation detection
     judges/              # Claude and Llama LLM judges
-    trackers/            # RMGI generalization tracking, PELT changepoint
-  training/              # DistilBERT model training pipeline
-  api/                   # FastAPI REST server + WebSocket
-  dashboard/             # Streamlit visualization (5 tabs)
+    trackers/            # RMGI tracking, PELT changepoint, Causal RMGI
+    calibration.py       # Dynamic threshold calibration
+  training/              # DistilBERT + AttentionClassifier pipelines
+  eval/                  # JSONL loader, rubric scoring, batch analysis, runs
+  experiments/           # Transfer study, evasion attacks
+  rhw_bench/             # HackBench dataset, generators, test cases
+  api/                   # FastAPI REST server
+  dashboard/             # Streamlit UI (dark mode, 6 tabs)
   cli.py                 # Command line interface
-  models/                # Local cache (~254MB, hosted on HuggingFace)
 ```
 
 ### Detection Pipeline
 
 ```
 Trajectory Input
-       |
-       v
-+------------------+
-|  Detection Layer |
-+------------------+
-| - ML Classifier  |  <-- Primary signal (89.7% F1)
-| - Pattern Detect |  <-- Interpretability layer
-| - AST Analyzer   |
-+--------+---------+
-         |
-         v
-+------------------+
-|  Judgment Layer  |
-+------------------+
-| - Claude Judge   |  <-- Cloud, high accuracy
-| - Llama Judge    |  <-- Local, cost-efficient
-+--------+---------+
-         |
-         v
-+------------------+
-|  Tracking Layer  |
-+------------------+
-| - RMGI Metric    |  <-- Correlation tracking
-| - PELT Detection |  <-- Changepoint detection
-+------------------+
-         |
-         v
-    Alert/Report
+       │
+       ▼
+┌──────────────────┐
+│  Detection Layer  │
+├──────────────────┤
+│ ML Classifier     │ ◄── Primary signal (89.7% F1, DistilBERT)
+│ Pattern Detector  │ ◄── 45 regex patterns (interpretability)
+│ AST Analyzer      │ ◄── Code structure analysis
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Analysis Layer   │
+├──────────────────┤
+│ CoT Analyzer      │ ◄── Deception detection in reasoning
+│ Effort Analyzer   │ ◄── Suspicious low-effort solutions
+│ Complexity Check  │ ◄── Obfuscation detection
+└────────┬─────────┘
+         │
+         ▼
+┌──────────────────┐
+│  Tracking Layer   │
+├──────────────────┤
+│ RMGI Metric       │ ◄── Hack-misalignment correlation
+│ Causal RMGI       │ ◄── Granger causality (v1.2)
+│ PELT Detection    │ ◄── Behavioral changepoints
+└────────┬─────────┘
+         │
+         ▼
+    Alert / Report
 ```
+
+### Figures
+
+| | |
+|---|---|
+| ![RMGI Transition](figures/fig1_transition_plot.png) | ![Architecture](figures/fig2_architecture.png) |
+| RMGI transition detection | System architecture |
+| ![Benchmark](figures/fig3_benchmark_comparison.png) | ![Categories](figures/fig4_category_performance.png) |
+| Baseline comparison | Per-category F1 |
+| ![Threshold](figures/fig5_threshold_sensitivity.png) | ![Calibration](figures/fig6_calibration.png) |
+| Threshold sensitivity | Model calibration |
+
+---
+
+## Related Work
+
+| Tool | Domain | Approach | Scope |
+|------|--------|----------|-------|
+| **RewardHackWatch** | LLM agents | Multi-layer (ML + pattern + RMGI) | Runtime detection + generalization tracking |
+| RewardScope | Classical RL | Reward model analysis | Reward function debugging |
+| OpenAI CoT Monitor | Reasoning models | Chain-of-thought scanning | Internal monitoring (not open-source) |
+| SHADE-Arena | LLM agents | Evaluation framework | Benchmark, not detection |
+| MALT | LLM agents | Trajectory dataset | Data only, no detector |
+
+**Key difference:** RewardScope and classical RL safety tools target RL reward models and policy optimization. RewardHackWatch targets *LLM agent trajectories* — the code, reasoning, and actions produced by language models operating as autonomous agents. These are fundamentally different failure modes.
+
+---
+
+## Roadmap
+
+### v1.2 (Current)
+
+- 89.7% F1 on 5,391 MALT trajectories (DistilBERT)
+- Mock exploit detection: 0% → 98.5% F1 (500 synthetic trajectories)
+- HackBench standardized benchmark (4,300+ trajectories, 9 categories)
+- Temporal AttentionClassifier for step-level escalation modeling
+- Causal RMGI with Granger causality testing
+- Evasion robustness testing (5 adversarial attack types)
+- Dynamic threshold calibration
+- Cross-model transfer study framework
+- Evaluation framework (JSONL loader, rubric scoring, batch analysis)
+- Dark-mode dashboard with 6 tabs
+- Python 3.9+ compatibility
+
+### v2.0 (Next)
+
+- Activation probing for deception detection
+- Steganography detection in CoT token choices
+- Multi-agent scenario monitoring
+- Real-time streaming API with WebSocket alerts
+- HuggingFace dataset release (HackBench)
+- Multi-language support
 
 ---
 
 ## RMGI Metric
 
-The Reward-Misalignment Generalization Index detects when reward hacking begins correlating with misalignment:
+The Reward-Misalignment Generalization Index detects when hacking begins correlating with misalignment:
 
 ```
-RMGI(i, W) = correlation(H[i-W+1:i], M[i-W+1:i])
+RMGI(i, W) = ρ(H[i-W+1:i], M[i-W+1:i])
 ```
 
-Where:
+- H = hack score time series, M = misalignment score time series, W = window size (default: 10)
+- Transition detected when RMGI > 0.7, hack > 0.5, misalignment > 0.5 for 5+ consecutive steps
+- v1.2 adds Causal RMGI: weights correlation by Granger causality p-value
 
-- H = hack score time series (from ML classifier)
-- M = misalignment score time series (from LLM judges)
-- W = sliding window size (default: 10)
-
-**Transition detected when:**
-
-- RMGI > 0.7 (correlation threshold)
-- Mean hack score > 0.5
-- Mean misalignment score > 0.5
-- All conditions hold for 5+ consecutive steps
-
-Note: RMGI measures correlation, not causation. High scores indicate elevated risk warranting human review.
+See [RMGI Specification](docs/RMGI_DEFINITION.md) for formal definition.
 
 ---
 
 ## Configuration
 
-### Environment Variables
-
 ```bash
-# LLM Judges
 export ANTHROPIC_API_KEY="your-key"        # For Claude judge
 export OLLAMA_HOST="http://localhost:11434" # For Llama judge
-
-# Detection thresholds
-export RHW_HACK_THRESHOLD="0.02"           # Calibrated for 3.6% base rate
-export RHW_RMGI_WINDOW="10"
-export RHW_RMGI_THRESHOLD="0.7"
+export RHW_HACK_THRESHOLD="0.02"           # Detection threshold
 ```
 
-### Dynamic Thresholding (Recommended)
-
-The default threshold (0.02) is calibrated for our dataset. For production deployment:
-
 ```python
-from rewardhackwatch import RewardHackDetector
-
+# Calibrate on your own data (recommended for production)
 detector = RewardHackDetector()
-# Calibrate on your clean data
 detector.calibrate_threshold(clean_trajectories, percentile=99)
 ```
 
@@ -343,106 +370,28 @@ detector.calibrate_threshold(clean_trajectories, percentile=99)
 
 ## Documentation
 
-- [Technical Report](docs/TECHNICAL_REPORT.md) - Full methodology and experiments
-- [RMGI Methodology](docs/RMGI_METHODOLOGY.md) - Generalization index specification
-- [Architecture](docs/ARCHITECTURE.md) - System design with Mermaid diagrams
-- [Related Work](docs/RELATED_WORK.md) - Literature review
-- [References](docs/REFERENCES.md) - Citations
-
----
-
-## Benchmarks
-
-### Detection Performance
-
-| Method                | F1        | Precision | Recall    |
-| --------------------- | --------- | --------- | --------- |
-| Keyword Matching      | 0.1%      | 0.1%      | 5.1%      |
-| Regex Patterns        | 4.9%      | 2.6%      | 38.5%     |
-| BoW + LogReg          | 7.0%      | 4.0%      | 28.2%     |
-| **DistilBERT (Ours)** | **89.7%** | **89.7%** | **89.7%** |
-
-### RMGI Transition Detection
-
-| Window | Threshold | Recall  | FPR      |
-| ------ | --------- | ------- | -------- |
-| **10** | **0.7**   | **70%** | **4.3%** |
-| 10     | 0.6       | 70%     | 5.7%     |
-| 20     | 0.7       | 54.5%   | 2.9%     |
-
-### Ablation Study
-
-| Configuration     | F1    | Notes                        |
-| ----------------- | ----- | ---------------------------- |
-| ML Only           | 89.7% | Best performance             |
-| ML + Pattern (OR) | 23.3% | Patterns add false positives |
-| Pattern Only      | 4.9%  | Low precision                |
-
-Key finding: Pattern detector serves interpretability, not primary detection.
-
----
-
-## Roadmap
-
-### v1.0.0 (Current)
-
-- Core detection system with 89.7% F1
-- RMGI transition tracking (70% recall @ 4.3% FPR)
-- 45 regex patterns for interpretability
-- Dual LLM judges (Claude + Llama)
-- Streamlit dashboard (5 tabs)
-- FastAPI + CLI
-- HuggingFace model release ([aerosta/rewardhackwatch](https://huggingface.co/aerosta/rewardhackwatch))
-
-### v1.1 (Planned)
-
-- Improved mock exploit coverage (synthetic data via red-teaming)
-- Full mypy type annotations
-- Dynamic threshold calibration API
-
-### v1.2 (Future)
-
-- Multi-language support
-- Adversarial robustness testing
-- Activation-level detection
-- Multi-agent scenarios
-
----
-
-## Known Limitations
-
-- **Mock Exploits**: 0% F1 due to data scarcity (planned fix in v1.1 via synthetic data generation)
-- **Threshold Sensitivity**: Requires recalibration for different base rates
-- **Correlation vs Causation**: RMGI detects correlation, not causal links
-- **Covert Misalignment**: May miss fully hidden deceptive reasoning
-
-See paper Limitations section for details.
-
----
-
-## Community
-
-- [GitHub Issues](https://github.com/aerosta/rewardhackwatch/issues) - Bug reports
-- [GitHub Discussions](https://github.com/aerosta/rewardhackwatch/discussions) - Questions & ideas
+- [Technical Report](docs/TECHNICAL_REPORT.md) — Full methodology and experiments
+- [RMGI Specification](docs/RMGI_DEFINITION.md) — Formal metric definition
+- [Architecture](docs/ARCHITECTURE.md) — System design diagrams
+- [Paper](paper/RewardHackWatch.pdf) — Research paper
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025 Aerosta
+Copyright (c) 2025 Aerosta Research
 
 ---
 
 ## Citation
 
 ```bibtex
-@article{aerosta2025rewardhackwatch,
+@software{aerosta2025rewardhackwatch,
   title={RewardHackWatch: Runtime Detection of Reward Hacking and
          Misalignment Generalization in LLM Agents},
-  author={Aerosta},
-  journal={manuscript},
+  author={Aerosta Research},
   year={2025},
   url={https://github.com/aerosta/rewardhackwatch}
 }
@@ -450,21 +399,6 @@ Copyright (c) 2025 Aerosta
 
 ---
 
-## Acknowledgments
+Built for AI safety researchers and engineers.
 
-Based on research from:
-
-- [Anthropic: Natural emergent misalignment from reward hacking](https://arxiv.org/abs/2511.18397) (Nov 2025)
-- [OpenAI: Monitoring reasoning models for misbehavior](https://arxiv.org/abs/2503.11926) (Mar 2025)
-- [Betley et al.: Emergent misalignment](https://arxiv.org/abs/2502.17424) (2025)
-- [Denison et al.: Sycophancy to subterfuge](https://arxiv.org/abs/2406.10162) (2024)
-
----
-
-Built for AI safety researchers and engineers
-
----
-
-## Keywords
-
-reward hacking, reward hacking detection, LLM safety, AI alignment, misalignment detection, RLHF safety, reward tampering, specification gaming, AI safety tools, machine learning safety, language model monitoring, agent safety, reward model, alignment research
+**Keywords:** reward hacking detection, LLM safety, AI alignment, misalignment detection, RLHF safety, reward tampering, specification gaming, AI safety tools, language model monitoring, agent safety

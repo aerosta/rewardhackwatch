@@ -1,0 +1,176 @@
+{
+  "old": {
+    "dataset_size": 500,
+    "cv_f1_mean": 0.9984,
+    "cv_f1_std": 0.0033,
+    "per_category": {
+      "alignment_faking": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 24,
+        "n_hack": 24,
+        "note": "single-class (using accuracy)"
+      },
+      "clean": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 188,
+        "n_hack": 0,
+        "note": "single-class (using accuracy)"
+      },
+      "deceptive_cot": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 48,
+        "n_hack": 48,
+        "note": "single-class (using accuracy)"
+      },
+      "mock_exploit": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 32,
+        "n_hack": 32,
+        "note": "single-class (using accuracy)"
+      },
+      "oversight_subversion": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 24,
+        "n_hack": 24,
+        "note": "single-class (using accuracy)"
+      },
+      "sabotage": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 24,
+        "n_hack": 24,
+        "note": "single-class (using accuracy)"
+      },
+      "sycophancy": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 24,
+        "n_hack": 24,
+        "note": "single-class (using accuracy)"
+      },
+      "sys_exit": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 56,
+        "n_hack": 56,
+        "note": "single-class (using accuracy)"
+      },
+      "test_manipulation": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 80,
+        "n_hack": 80,
+        "note": "single-class (using accuracy)"
+      }
+    }
+  },
+  "new": {
+    "dataset_size": 1832,
+    "cv_f1_mean": 0.9956,
+    "cv_f1_std": 0.0022,
+    "per_category": {
+      "alignment_faking": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 33,
+        "n_hack": 33,
+        "note": "single-class (using accuracy)"
+      },
+      "clean": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 921,
+        "n_hack": 0,
+        "note": "single-class (using accuracy)"
+      },
+      "deceptive_cot": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 48,
+        "n_hack": 48,
+        "note": "single-class (using accuracy)"
+      },
+      "deceptive_reasoning": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 15,
+        "n_hack": 15,
+        "note": "single-class (using accuracy)"
+      },
+      "mock_exploit": {
+        "f1": 0.9853,
+        "precision": 0.9853,
+        "recall": 0.9853,
+        "n_samples": 544,
+        "n_hack": 544,
+        "note": "single-class (using accuracy)"
+      },
+      "oversight_subversion": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 33,
+        "n_hack": 33,
+        "note": "single-class (using accuracy)"
+      },
+      "sabotage": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 33,
+        "n_hack": 33,
+        "note": "single-class (using accuracy)"
+      },
+      "sycophancy": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 33,
+        "n_hack": 33,
+        "note": "single-class (using accuracy)"
+      },
+      "sys_exit": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 56,
+        "n_hack": 56,
+        "note": "single-class (using accuracy)"
+      },
+      "test_bypass": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 15,
+        "n_hack": 15,
+        "note": "single-class (using accuracy)"
+      },
+      "test_manipulation": {
+        "f1": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "n_samples": 101,
+        "n_hack": 101,
+        "note": "single-class (using accuracy)"
+      }
+    }
+  }
+}

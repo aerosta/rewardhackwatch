@@ -1051,7 +1051,7 @@ export default function JsonlAnalyzer() {
                         <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} width={140} />
                         <Tooltip
                           contentStyle={{ backgroundColor: '#292A30', border: '1px solid #363840', borderRadius: '8px', fontSize: '12px' }}
-                          formatter={(v: number) => [`${v}%`, 'Pass Rate']}
+                          formatter={(v: number | undefined) => [`${v ?? 0}%`, 'Pass Rate']}
                         />
                         <Bar dataKey="rate" radius={[0, 4, 4, 0]}>
                           {Object.values(summary.per_rule_pass_rate).map((rate, i) => (

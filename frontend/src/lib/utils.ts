@@ -57,6 +57,11 @@ export function cn(...classes: (string | false | undefined | null)[]): string {
   return classes.filter(Boolean).join(' ');
 }
 
+const ACRONYMS: Record<string, string> = { cot: 'CoT', rmgi: 'RMGI', llm: 'LLM' };
+
 export function categoryLabel(cat: string): string {
-  return cat.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return cat
+    .split('_')
+    .map(w => ACRONYMS[w] ?? w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }

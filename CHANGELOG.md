@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Eval Workbench (formerly JSONL Analyzer)
 
-- Drag-drop JSONL import with auto-detect schema (OpenAI, ShareGPT, completion, I/O, Q&A)
+- Drag-drop JSONL import with auto-detect schema (conversation, completion, I/O, Q&A)
 - Raw JSONL paste input with parse preview
 - Custom evaluation rules: regex, keyword, length, LLM judge types
 - 8 built-in rule templates (rogue code, mock exploit, safety, deceptive CoT, etc.)
@@ -41,6 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Per-section save buttons
 - Settings persistence via localStorage
 
+#### Typography
+
+- Space Grotesk font for headings, stat numbers, chart titles, sidebar logo
+- Inter font for body text and labels
+- JetBrains Mono for code blocks and monospace elements
+
 ### Changed
 
 - License changed to Apache 2.0
@@ -48,17 +54,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Color scheme updated: bg `#20232B`, cards `#292A30`, sidebar `#1B1D24`, borders `#363840`
 - All hardcoded colors in chart components replaced with theme variables
 - Sidebar label: "JSONL Analyzer" renamed to "Eval Workbench"
+- Sidebar logo: "RewardHackWatch" as single word
 - All chart containers minimum 320px height
 - American spelling throughout ("analyzed" not "analysed")
+- Dashboard category bar chart: shorter axis labels, wider bar area
+- Dashboard chart title: "Detections by Category" shortened to "Category Breakdown" to prevent truncation in 3-column layout
+- Model labels in Settings now display exact model strings instead of friendly names
+- Settings cards now full-width layout instead of narrow centered column
+- Eval Workbench format labels: generic "Model 1" / "Model 2" / "Custom Format" instead of provider-specific names
 
 ### Fixed
 
 - CITATION.cff placeholder values replaced with actual metadata
 - SECURITY.md placeholder email replaced
-- "Aerosta Research" normalized to "Aerosta" across all files
+- Organization name normalized to "Aerosta" across all files
 - Sidebar truncation of long nav labels
 - Removed all em dashes from README
 - CHANGELOG v1.0.0 date corrected to 2025-12-09
+- Category label "Deceptive Cot" corrected to "Deceptive CoT" via acronym-aware formatter
+- TypeScript build error in Eval Workbench chart tooltip formatter
 
 ## [1.2.0] - 2026-02-28
 

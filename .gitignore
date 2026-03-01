@@ -73,10 +73,14 @@ paper/*.pdf
 *.tar.gz
 *.whl
 
-# API keys (never commit)
+# API keys and secrets (never commit)
 credentials.json
 *.pem
 *.key
+*.secret
+secrets/
+config.local.*
+.env.*
 
 # Large model files
 models/huggingface/

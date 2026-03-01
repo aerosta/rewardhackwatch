@@ -44,8 +44,13 @@ export default function Dashboard() {
     .filter(([, v]) => v > 0)
     .map(([k, v]) => ({ name: k, value: v, fill: RISK_COLORS[k as RiskLevel] }));
 
+  const SHORT_LABELS: Record<string, string> = {
+    oversight_subversion: 'Oversight Subv.',
+    test_manipulation: 'Test Manip.',
+    alignment_faking: 'Align. Faking',
+  };
   const categoryBarData = Object.entries(stats.category_distribution)
-    .map(([k, v]) => ({ name: categoryLabel(k), value: v, key: k }))
+    .map(([k, v]) => ({ name: SHORT_LABELS[k] ?? categoryLabel(k), value: v, key: k }))
     .sort((a, b) => b.value - a.value);
 
   const timelineData = stats.timeline.map(t => ({
@@ -110,19 +115,19 @@ export default function Dashboard() {
         </ChartCard>
 
         {/* Category Bar Chart */}
-        <ChartCard title="Detections by Category" subtitle="Hack type distribution">
+        <ChartCard title="Category Breakdown" subtitle="Hack type distribution">
           <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryBarData} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
+              <BarChart data={categoryBarData} layout="vertical" margin={{ left: 4, right: 16, top: 4, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#363840" horizontal={false} />
                 <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis
                   dataKey="name"
                   type="category"
-                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  tick={{ fill: '#94a3b8', fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
-                  width={130}
+                  width={100}
                 />
                 <Tooltip {...TOOLTIP_STYLE} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22}>

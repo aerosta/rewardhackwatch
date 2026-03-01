@@ -392,6 +392,17 @@ export default function JsonlAnalyzer() {
     const activeRules = rules.filter(r => r.active);
     if (entries.length === 0 || activeRules.length === 0) return;
 
+    // Check if LLM judge rules are active but no API key configured
+    const hasLlmRule = activeRules.some(r => r.type === 'llm_judge');
+    if (hasLlmRule) {
+      const stored = localStorage.getItem('rhw_settings');
+      const key = stored ? JSON.parse(stored).llm_api_key : '';
+      if (!key) {
+        alert('LLM Judge requires an API key. Configure it in Settings, or disable LLM judge rules to continue.');
+        return;
+      }
+    }
+
     const totalItems = entries.length + model2Entries.length;
     setRunning(true);
     setProgress({ current: 0, total: totalItems });
@@ -649,17 +660,20 @@ export default function JsonlAnalyzer() {
                 </button>
               )}
 
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { name: 'Model 1', example: '{"messages": [...]}' },
-                  { name: 'Model 2', example: '{"prompt": ..., "completion": ...}' },
-                  { name: 'Custom Format', example: '{"input": ..., "output": ...}' },
-                ].map(s => (
-                  <div key={s.name} className="card py-3 text-center">
-                    <p className="text-xs font-semibold text-accent-blue mb-1">{s.name}</p>
-                    <p className="text-[10px] text-text-muted font-mono">{s.example}</p>
-                  </div>
-                ))}
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-text-muted font-semibold mb-2">Supported input formats</p>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { name: 'Messages', example: '{"messages": [...]}' },
+                    { name: 'Prompt/Completion', example: '{"prompt": ..., "completion": ...}' },
+                    { name: 'Input/Output', example: '{"input": ..., "output": ...}' },
+                  ].map(s => (
+                    <div key={s.name} className="py-2.5 px-3 text-center rounded-lg border border-dashed border-border-default opacity-60">
+                      <p className="text-[11px] font-medium text-text-secondary mb-0.5">{s.name}</p>
+                      <p className="text-[10px] text-text-muted font-mono">{s.example}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
@@ -800,6 +814,11 @@ export default function JsonlAnalyzer() {
                       <SevIcon className={cn('w-3.5 h-3.5', SEVERITY_COLOR[rule.severity])} />
                       <span className="text-sm font-semibold text-text-primary">{rule.name}</span>
                       <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-elevated text-text-muted">{rule.type}</span>
+                      {rule.type === 'llm_judge' && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400" title="Requires API key in Settings">
+                          <AlertTriangle className="w-3 h-3 inline -mt-0.5 mr-0.5" />API key needed
+                        </span>
+                      )}
                       <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-bg-elevated text-text-muted">w:{rule.weight}</span>
                     </div>
                     <p className="text-xs text-text-muted">{rule.description}</p>

@@ -178,6 +178,7 @@ export default function Settings() {
                 {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            {!settings.llm_api_key && <p className="text-[11px] text-text-muted mt-1">Not configured</p>}
           </div>
           <div>
             <label className={labelClass}>Model</label>
@@ -268,6 +269,7 @@ export default function Settings() {
                 {showReviewKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+            {!settings.review_api_key && <p className="text-[11px] text-text-muted mt-1">Not configured</p>}
           </div>
           <div>
             <label className={labelClass}>Model</label>

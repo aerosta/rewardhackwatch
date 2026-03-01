@@ -61,9 +61,13 @@ export default function QuickAnalysis() {
         if (res.ok) {
           setResult(await res.json());
         } else {
-          throw new Error('API unavailable');
+          const body = await res.text().catch(() => '');
+          throw new Error(body.includes('model') ? `ML model error: ${body}` : 'API unavailable');
         }
-      } catch {
+      } catch (fetchErr) {
+        if (fetchErr instanceof TypeError && fetchErr.message.includes('fetch')) {
+          setError('Backend not running. Start with: rewardhackwatch serve --port 8000');
+        }
         setResult(demoData.analyzeDemo(input));
       }
     } catch (e) {

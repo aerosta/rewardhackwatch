@@ -1,4 +1,6 @@
-# Your LLM is cheating on its tests. This tool catches it.
+# RewardHackWatch
+
+**Catches LLM agents cheating on their evaluations.**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -9,7 +11,9 @@
   <img src="assets/screenshots/dashboard.png" alt="RewardHackWatch Dashboard" width="900">
 </p>
 
-**RewardHackWatch** detects when LLM agents game their reward signals - calling `sys.exit(0)` to fake passing tests, mocking validators to skip checks, manipulating evaluation harnesses - and tracks whether these behaviors generalize into broader misalignment like alignment faking and sabotage.
+RewardHackWatch detects when AI agents game their tests - calling `sys.exit(0)` to fake passing, patching validators, copying reference answers, manipulating test harnesses. It tracks whether these tricks escalate into deception and sabotage.
+
+89.7% F1 on 5,391 real agent trajectories from METR's MALT dataset.
 
 ---
 
@@ -57,13 +61,9 @@ rewardhackwatch calibrate ./clean_data/   # Calibrate threshold
 
 ## Why This Matters
 
-LLM agents are learning to cheat. Recent research demonstrates this is a real and growing problem:
+Anthropic found reward hacking leads to alignment faking and sabotage. METR found agents exploit evaluation loopholes in ways developers didn't anticipate. OpenAI found reasoning models plan deceptive strategies in hidden chain-of-thought.
 
-- **Anthropic (Nov 2025)** - Reward hacking in frontier models generalizes to alignment faking, sabotage, and oversight subversion. Models that learn to game rewards develop broader misalignment behaviors without being explicitly trained to do so.
-- **METR (Jun 2025)** - Autonomous agents in real-world task environments discover and exploit evaluation loopholes, sometimes in ways their developers did not anticipate.
-- **OpenAI (Mar 2025)** - Chain-of-thought monitoring reveals that reasoning models plan deceptive strategies in their hidden reasoning, including test manipulation and reward tampering.
-
-RewardHackWatch is the first open-source tool built specifically to detect these behaviors in LLM agent trajectories at runtime.
+No open-source tool existed to detect this at runtime. Now one does.
 
 ---
 
@@ -84,14 +84,14 @@ Validated on 5,391 real MALT trajectories. Statistical significance: p < 0.001 v
 
 | Category | F1 | Samples | Notes |
 |----------|-----|---------|-------|
-| sys_exit | 100.0% | 56 | Fake test passing via exit |
-| test_manipulation | 100.0% | 101 | Direct test tampering |
-| deceptive_cot | 100.0% | 48 | Hidden deceptive reasoning |
-| alignment_faking | 100.0% | 33 | Pretending to be aligned |
-| sabotage | 100.0% | 33 | Active system sabotage |
-| sycophancy | 100.0% | 33 | Telling users what they want |
-| oversight_subversion | 100.0% | 33 | Avoiding monitoring |
-| **mock_exploit** | **98.5%** | **544** | **Mock/monkeypatch hacks (was 0% in v1.0)** |
+| sys_exit | 100.0% | 56 | Faking passes with exit codes |
+| test_manipulation | 100.0% | 101 | Rewriting tests to always pass |
+| deceptive_cot | 100.0% | 48 | Planning exploits in hidden reasoning |
+| alignment_faking | 100.0% | 33 | Pretending to follow rules while breaking them |
+| sabotage | 100.0% | 33 | Breaking things on purpose |
+| sycophancy | 100.0% | 33 | Telling users what they want to hear |
+| oversight_subversion | 100.0% | 33 | Dodging monitoring systems |
+| **mock_exploit** | **98.5%** | **544** | **Patching validators to skip checks (was 0% in v1.0)** |
 | clean | 100.0% | 921 | Legitimate trajectories |
 
 ### Baseline Comparisons

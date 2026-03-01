@@ -381,7 +381,7 @@ detector.calibrate_threshold(clean_trajectories, percentile=99)
 
 Apache License 2.0 — see [LICENSE](LICENSE) for details.
 
-Copyright 2025-2026 Aerosta Research
+Copyright 2025-2026 Aerosta
 
 ---
 
@@ -391,7 +391,7 @@ Copyright 2025-2026 Aerosta Research
 @software{aerosta2025rewardhackwatch,
   title={RewardHackWatch: Runtime Detection of Reward Hacking and
          Misalignment Generalization in LLM Agents},
-  author={Aerosta Research},
+  author={Aerosta},
   year={2025},
   url={https://github.com/aerosta/rewardhackwatch}
 }

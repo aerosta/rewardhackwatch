@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings as SettingsIcon, Save, RotateCcw, Server, Bell, Palette, Download } from 'lucide-react';
+import { Settings as SettingsIcon, Save, RotateCcw, Server, Bell, Palette, Download, BrainCircuit } from 'lucide-react';
 import type { AppSettings } from '../lib/types';
 import { PageHeader } from '../components/PageHeader';
 import { cn } from '../lib/utils';
@@ -11,6 +11,11 @@ const DEFAULT_SETTINGS: AppSettings = {
   refresh_interval: 30,
   dark_mode: true,
   notifications_enabled: true,
+  claude_api_key: '',
+  openai_api_key: '',
+  judge_model: 'claude-sonnet-4-20250514',
+  judge_temperature: 0.0,
+  judge_max_tokens: 1024,
 };
 
 export default function Settings() {
@@ -187,6 +192,79 @@ export default function Settings() {
         </div>
       </div>
 
+      {/* LLM Judge */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <BrainCircuit className="w-4 h-4 text-accent-emerald" />
+          <h3 className="text-sm font-semibold text-text-primary">LLM Judge Configuration</h3>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-text-secondary mb-1.5">Claude API Key</label>
+            <input
+              type="password"
+              value={settings.claude_api_key}
+              onChange={e => setSettings({ ...settings, claude_api_key: e.target.value })}
+              placeholder="sk-ant-..."
+              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-text-secondary mb-1.5">OpenAI API Key</label>
+            <input
+              type="password"
+              value={settings.openai_api_key}
+              onChange={e => setSettings({ ...settings, openai_api_key: e.target.value })}
+              placeholder="sk-..."
+              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none font-mono"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-text-secondary mb-1.5">Judge Model</label>
+            <select
+              value={settings.judge_model}
+              onChange={e => setSettings({ ...settings, judge_model: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary focus:border-accent-blue focus:outline-none"
+            >
+              <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-text-secondary mb-1.5">
+                Temperature: <span className="text-accent-emerald font-mono">{settings.judge_temperature.toFixed(1)}</span>
+              </label>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.1}
+                value={settings.judge_temperature}
+                onChange={e => setSettings({ ...settings, judge_temperature: parseFloat(e.target.value) })}
+                className="w-full accent-accent-emerald"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-text-secondary mb-1.5">
+                Max Tokens: <span className="text-accent-emerald font-mono">{settings.judge_max_tokens}</span>
+              </label>
+              <input
+                type="range"
+                min={256}
+                max={4096}
+                step={256}
+                value={settings.judge_max_tokens}
+                onChange={e => setSettings({ ...settings, judge_max_tokens: parseInt(e.target.value) })}
+                className="w-full accent-accent-emerald"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Export */}
       <div className="card">
         <div className="flex items-center gap-2 mb-4">
@@ -211,7 +289,7 @@ export default function Settings() {
           <h3 className="text-sm font-semibold text-text-primary">About</h3>
         </div>
         <div className="space-y-1 text-sm text-text-secondary">
-          <p><span className="text-text-muted">Version:</span> 1.2.0</p>
+          <p><span className="text-text-muted">Version:</span> 1.3.0</p>
           <p><span className="text-text-muted">License:</span> Apache 2.0</p>
           <p><span className="text-text-muted">Author:</span> Aerosta</p>
         </div>

@@ -667,7 +667,7 @@ def render_sidebar():
 
     st.sidebar.markdown("---")
     st.sidebar.markdown(
-        f'<div style="text-align:center; color:{TEXT_DIM}; font-size:10px; padding:8px 0;">RewardHackWatch v{VERSION}<br>Aerosta Research</div>',
+        f'<div style="text-align:center; color:{TEXT_DIM}; font-size:10px; padding:8px 0;">RewardHackWatch v{VERSION}<br>Aerosta</div>',
         unsafe_allow_html=True,
     )
 
@@ -1196,7 +1196,7 @@ def main():
 
     # Footer
     st.markdown(
-        f'<div style="text-align:center; color:{TEXT_DIM}; font-size:11px; padding:24px 0 12px 0; border-top:1px solid {BORDER}; margin-top:32px;">RewardHackWatch v{VERSION} &bull; Aerosta Research</div>',
+        f'<div style="text-align:center; color:{TEXT_DIM}; font-size:11px; padding:24px 0 12px 0; border-top:1px solid {BORDER}; margin-top:32px;">RewardHackWatch v{VERSION} &bull; Aerosta</div>',
         unsafe_allow_html=True,
     )
 

@@ -27,7 +27,7 @@ const NAV_ITEMS = [
   { to: '/alerts', icon: Bell, label: 'Alerts' },
   { to: '/cross-model', icon: GitCompareArrows, label: 'Cross-Model' },
   { to: '/cot-viewer', icon: BrainCircuit, label: 'CoT Viewer' },
-  { to: '/jsonl', icon: FileJson, label: 'JSONL Analyzer' },
+  { to: '/jsonl', icon: FileJson, label: 'Eval Workbench' },
   { to: '/sessions', icon: List, label: 'Session Logs' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
@@ -76,7 +76,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             }
           >
             <item.icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.8} />
-            {!collapsed && <span className="truncate">{item.label}</span>}
+            {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
           </NavLink>
         ))}
       </nav>

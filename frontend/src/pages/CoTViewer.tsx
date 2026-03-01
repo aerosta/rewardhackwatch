@@ -64,7 +64,7 @@ export default function CoTViewer() {
 
       {/* Hack Score Chart */}
       <ChartCard title="Hack Score Progression" subtitle="Per-step deception score">
-        <div className="h-[300px]">
+        <div className="h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <defs>

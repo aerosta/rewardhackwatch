@@ -59,13 +59,13 @@ export default function Dashboard() {
     <div className="space-y-6">
       <PageHeader
         title="Dashboard"
-        subtitle={`${stats.total_analysed.toLocaleString()} trajectories analysed`}
+        subtitle={`${stats.total_analyzed.toLocaleString()} trajectories analyzed`}
       />
 
       {/* Stat Cards — 5 across on wide, 3+2 on medium */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <StatCard title="Total Analysed" value={stats.total_analysed.toLocaleString()} color="blue" />
-        <StatCard title="Flagged" value={stats.total_flagged} subtitle={`${((stats.total_flagged / stats.total_analysed) * 100).toFixed(1)}% detection rate`} color="emerald" />
+        <StatCard title="Total Analysed" value={stats.total_analyzed.toLocaleString()} color="blue" />
+        <StatCard title="Flagged" value={stats.total_flagged} subtitle={`${((stats.total_flagged / stats.total_analyzed) * 100).toFixed(1)}% detection rate`} color="emerald" />
         <StatCard title="Critical" value={stats.critical_count} color="amber" trend={{ value: -12, label: 'vs last week' }} />
         <StatCard title="Avg ML Score" value={(stats.avg_ml_score * 100).toFixed(1) + '%'} subtitle="Threshold: 2.0%" color="violet" />
         <StatCard title="High Risk" value={stats.high_count} color="red" />
@@ -75,7 +75,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
         {/* Risk Distribution Donut */}
         <ChartCard title="Risk Distribution" subtitle="Across all trajectories">
-          <div className="h-[300px] flex flex-col items-center">
+          <div className="h-[320px] flex flex-col items-center">
             <div className="flex-1 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -111,7 +111,7 @@ export default function Dashboard() {
 
         {/* Category Bar Chart */}
         <ChartCard title="Detections by Category" subtitle="Hack type distribution">
-          <div className="h-[300px]">
+          <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryBarData} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" horizontal={false} />
@@ -137,7 +137,7 @@ export default function Dashboard() {
 
         {/* RMGI Timeline */}
         <ChartCard title="RMGI Timeline" subtitle="Recent trajectory scores">
-          <div className="h-[300px]">
+          <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={timelineData} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
                 <defs>

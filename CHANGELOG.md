@@ -5,6 +5,53 @@ All notable changes to RewardHackWatch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-03-01
+
+### Added
+
+#### React Frontend
+- Full React 18 + TypeScript + Tailwind CSS v4 dashboard replacing Streamlit
+- 9-page SPA: Dashboard, Quick Analysis, Timeline, Alerts, Cross-Model, CoT Viewer, Eval Workbench, Session Logs, Settings
+- Dark-mode developer tool UI with `#1a1a2e` theme and JetBrains Mono
+- Stat cards with accent-colored left borders
+- Recharts-based visualizations (donut, bar, area, line, radar charts)
+- Code splitting with manual chunks for react and recharts
+
+#### Eval Workbench (formerly JSONL Analyzer)
+
+- Drag-drop JSONL import with auto-detect schema (OpenAI, ShareGPT, completion, I/O, Q&A)
+- Raw JSONL paste input with parse preview
+- Custom evaluation rules: regex, keyword, length, LLM judge types
+- 8 built-in rule templates (rogue code, mock exploit, safety, deceptive CoT, etc.)
+- Rule management: add, toggle, delete, weight and severity configuration
+- Batch evaluation engine with progress bar
+- Weighted scoring system with A-F grade badges
+- Per-entry detail view with full conversation and rule results
+- Per-rule pass rate charts and grade distribution visualization
+- JSON and CSV export
+
+#### Settings
+
+- LLM Judge configuration: API key inputs, model selection, temperature/max tokens
+- Settings persistence via localStorage
+
+### Changed
+
+- License changed to Apache 2.0
+- Version bumped to 1.3.0
+- Sidebar label: "JSONL Analyzer" renamed to "Eval Workbench"
+- All chart containers minimum 320px height
+- American spelling throughout ("analyzed" not "analysed")
+
+### Fixed
+
+- CITATION.cff placeholder values replaced with actual metadata
+- SECURITY.md placeholder email replaced
+- "Aerosta Research" normalized to "Aerosta" across all files
+- Sidebar truncation of long nav labels
+- Removed all em dashes from README
+- CHANGELOG v1.0.0 date corrected to 2025-12-09
+
 ## [1.2.0] - 2026-02-28
 
 ### Added
@@ -46,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `__version__` was "0.1.0" instead of matching pyproject.toml
-- `__author__` was "Your Name" instead of "Aerosta Research"
+- `__author__` was "Your Name" instead of "Aerosta"
 - `RewardHackDetector` class referenced in README didn't exist
 - `result.detections` referenced in Quick Start didn't exist
 - Python 3.9 compatibility: added `from __future__ import annotations` to 52 files
@@ -56,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Version bumped to 1.2.0
 - Development status upgraded from Alpha to Beta
 
-## [1.0.0] - 2025-12-06
+## [1.0.0] - 2025-12-09
 
 ### Added
 
@@ -77,7 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Multi-Judge System
 - Claude Judge: Claude Opus 4.5 integration for trajectory analysis
 - Llama Judge: Local Llama 3.1 (8B) via Ollama for cost-free analysis
-- Ensemble voting for robust detection
+- Ensemble voting for multi-signal detection
 
 #### API and Dashboard
 - FastAPI server with `/analyze` and `/status` endpoints
@@ -89,7 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integration with SHADE-Arena evaluation framework
 - MALT trajectory loader for training data
 - Synthetic trajectory generation for ablation studies
-- Comprehensive benchmark runner with multiple dataset support
+- Benchmark runner with multiple dataset support
 
 #### Documentation
 - Technical report with full methodology and results
@@ -148,17 +195,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Threshold requires recalibration if base rate changes significantly
 - RMGI requires minimum 5 timesteps for reliable correlation
 
-## [0.1.0] - 2025-11-01
-
-### Added
-- Initial project structure
-- Basic pattern detection prototype
-- Prototype RMGI tracker
-
 ## [Unreleased]
 
 ### Planned
 - Activation probing for deception detection
 - Steganography detection in CoT token choices
-- Adversarial robustness testing
-- Additional benchmark dataset integrations
+- Multi-agent scenario monitoring
+- Real-time streaming API with WebSocket alerts

@@ -49,7 +49,7 @@ If you discover a security vulnerability in RewardHackWatch:
 
 ### Do
 
-1. **Email**: Send details to [PLACEHOLDER_EMAIL]
+1. **Email**: Send details to <security@aerosta.ai>
 2. **Include**:
    - Description of the vulnerability
    - Steps to reproduce
@@ -121,5 +121,5 @@ We thank the following for security research contributions:
 
 ## Contact
 
-- Security issues: [PLACEHOLDER_EMAIL]
+- Security issues: <security@aerosta.ai>
 - General questions: Open a GitHub issue

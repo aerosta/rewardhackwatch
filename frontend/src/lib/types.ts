@@ -89,6 +89,70 @@ export interface AppSettings {
   refresh_interval: number;
   dark_mode: boolean;
   notifications_enabled: boolean;
+  claude_api_key: string;
+  openai_api_key: string;
+  judge_model: string;
+  judge_temperature: number;
+  judge_max_tokens: number;
+}
+
+// ── Eval Workbench Types ──────────────────────────────────────────
+
+export type RuleType = 'regex' | 'keyword' | 'length' | 'llm_judge';
+export type RuleSeverity = 'error' | 'warning' | 'info';
+export type Grade = 'A' | 'B' | 'C' | 'D' | 'F';
+
+export interface EvalRule {
+  id: string;
+  name: string;
+  description: string;
+  type: RuleType;
+  severity: RuleSeverity;
+  weight: number;
+  active: boolean;
+  config: {
+    pattern?: string;
+    keywords?: string[];
+    min_length?: number;
+    max_length?: number;
+    judge_prompt?: string;
+  };
+}
+
+export interface ConversationTurn {
+  role: 'user' | 'assistant' | 'system' | 'tool';
+  content: string;
+}
+
+export interface EvalEntry {
+  index: number;
+  turns: ConversationTurn[];
+  raw: Record<string, unknown>;
+  schema: string;
+}
+
+export interface RuleResult {
+  rule_id: string;
+  rule_name: string;
+  passed: boolean;
+  severity: RuleSeverity;
+  rationale: string;
+  evidence?: string;
+}
+
+export interface EntryScore {
+  entry_index: number;
+  rule_results: RuleResult[];
+  weighted_score: number;
+  grade: Grade;
+}
+
+export interface EvalSummary {
+  total_entries: number;
+  avg_score: number;
+  grade_distribution: Record<Grade, number>;
+  per_rule_pass_rate: Record<string, number>;
+  by_severity: Record<RuleSeverity, { total: number; failed: number }>;
 }
 
 export interface DashboardStats {

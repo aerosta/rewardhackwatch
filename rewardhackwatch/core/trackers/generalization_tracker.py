@@ -479,3 +479,307 @@ def detect_transition(
     misalign_condition = np.mean(recent_misalign) > config.misalignment_threshold
 
     return rmgi_condition and hack_condition and misalign_condition
+
+
+# ============================================================================
+# Causal RMGI (Granger Causality Extension)
+# ============================================================================
+
+# Optional: statsmodels for Granger causality tests
+try:
+    from statsmodels.tsa.stattools import grangercausalitytests
+
+    HAS_STATSMODELS = True
+except ImportError:
+    HAS_STATSMODELS = False
+
+
+@dataclass
+class CausalRMGIResult:
+    """Result from causal RMGI analysis."""
+
+    granger_p_value: float
+    granger_f_stat: float
+    causal_direction: str  # "hack_causes_misalignment", "bidirectional", "no_causality"
+    optimal_lag: int
+    causal_rmgi: float  # Adjusted RMGI weighted by causal evidence
+    correlation_rmgi: float  # Standard correlation-based RMGI for comparison
+    intervention_effect: float  # Estimated effect of removing hacking
+    metadata: dict = field(default_factory=dict)
+
+    def to_dict(self) -> dict:
+        return {
+            "granger_p_value": self.granger_p_value,
+            "granger_f_stat": self.granger_f_stat,
+            "causal_direction": self.causal_direction,
+            "optimal_lag": self.optimal_lag,
+            "causal_rmgi": self.causal_rmgi,
+            "correlation_rmgi": self.correlation_rmgi,
+            "intervention_effect": self.intervention_effect,
+            "metadata": self.metadata,
+        }
+
+
+class CausalRMGI:
+    """Causal extension of RMGI using Granger causality testing.
+
+    Upgrades the correlation-based RMGI to determine whether reward hacking
+    *causes* misalignment generalization, rather than merely correlating with it.
+
+    Requires: pip install rewardhackwatch[causal]  (statsmodels>=0.14.0)
+
+    Methods:
+        granger_test: Run Granger causality test (hack → misalignment)
+        compute_causal_rmgi: RMGI weighted by causal evidence strength
+        intervention_analysis: Estimate counterfactual effect of removing hacking
+    """
+
+    def __init__(self, max_lag: int = 5, significance: float = 0.05):
+        """Initialize causal RMGI analyzer.
+
+        Args:
+            max_lag: Maximum lag order for Granger causality test.
+            significance: P-value threshold for declaring causality.
+        """
+        if not HAS_STATSMODELS:
+            raise ImportError(
+                "CausalRMGI requires statsmodels. "
+                "Install with: pip install rewardhackwatch[causal]"
+            )
+        self.max_lag = max_lag
+        self.significance = significance
+
+    def granger_test(
+        self,
+        hack_scores: list[float],
+        misalign_scores: list[float],
+    ) -> dict:
+        """Run Granger causality test: does hacking Granger-cause misalignment?
+
+        Tests whether past values of hack_scores improve prediction of
+        misalign_scores beyond what past misalign_scores alone provide.
+
+        Args:
+            hack_scores: Time series of reward hacking scores.
+            misalign_scores: Time series of misalignment scores.
+
+        Returns:
+            Dict with p_value, f_statistic, optimal_lag, and is_causal flag.
+        """
+        min_required = 2 * self.max_lag + 5
+        if len(hack_scores) < min_required or len(misalign_scores) < min_required:
+            return {
+                "p_value": 1.0,
+                "f_statistic": 0.0,
+                "optimal_lag": 0,
+                "is_causal": False,
+                "error": f"Need at least {min_required} observations, got {len(hack_scores)}",
+            }
+
+        # Prepare data: [misalign, hack] — testing if hack Granger-causes misalign
+        data = np.column_stack([
+            np.array(misalign_scores, dtype=float),
+            np.array(hack_scores, dtype=float),
+        ])
+
+        # Add small noise to prevent singular matrix issues with constant series
+        if np.std(data[:, 0]) < 1e-10:
+            data[:, 0] += np.random.RandomState(42).normal(0, 1e-6, len(data))
+        if np.std(data[:, 1]) < 1e-10:
+            data[:, 1] += np.random.RandomState(43).normal(0, 1e-6, len(data))
+
+        try:
+            results = grangercausalitytests(data, maxlag=self.max_lag, verbose=False)
+        except Exception as e:
+            return {
+                "p_value": 1.0,
+                "f_statistic": 0.0,
+                "optimal_lag": 0,
+                "is_causal": False,
+                "error": str(e),
+            }
+
+        # Find optimal lag (lowest p-value)
+        best_lag = 1
+        best_p = 1.0
+        best_f = 0.0
+
+        for lag in range(1, self.max_lag + 1):
+            if lag in results:
+                # Use ssr_ftest (standard F-test for Granger causality)
+                f_test = results[lag][0]["ssr_ftest"]
+                p_value = f_test[1]
+                f_stat = f_test[0]
+
+                if p_value < best_p:
+                    best_p = p_value
+                    best_f = f_stat
+                    best_lag = lag
+
+        return {
+            "p_value": float(best_p),
+            "f_statistic": float(best_f),
+            "optimal_lag": best_lag,
+            "is_causal": best_p < self.significance,
+        }
+
+    def compute_causal_rmgi(
+        self,
+        hack_scores: list[float],
+        misalign_scores: list[float],
+        window: int = 10,
+    ) -> CausalRMGIResult:
+        """Compute causal RMGI that weights correlation by causal evidence.
+
+        Causal RMGI = correlation_RMGI × causal_weight
+
+        Where causal_weight = 1 - p_value (strength of Granger causality).
+        This penalizes spurious correlations that lack causal support.
+
+        Args:
+            hack_scores: Time series of hacking scores.
+            misalign_scores: Time series of misalignment scores.
+            window: Window size for correlation RMGI.
+
+        Returns:
+            CausalRMGIResult with both causal and correlation RMGI.
+        """
+        # Standard correlation RMGI
+        corr_rmgi = compute_rmgi(hack_scores, misalign_scores, window=window)
+
+        # Granger causality test: hack → misalignment
+        forward = self.granger_test(hack_scores, misalign_scores)
+
+        # Granger causality test: misalignment → hack (reverse)
+        reverse = self.granger_test(misalign_scores, hack_scores)
+
+        # Determine causal direction
+        forward_causal = forward.get("is_causal", False)
+        reverse_causal = reverse.get("is_causal", False)
+
+        if forward_causal and reverse_causal:
+            direction = "bidirectional"
+        elif forward_causal:
+            direction = "hack_causes_misalignment"
+        elif reverse_causal:
+            direction = "misalignment_causes_hack"
+        else:
+            direction = "no_causality"
+
+        # Causal weight: 1 - p_value (higher = stronger causal evidence)
+        causal_weight = 1.0 - forward["p_value"]
+        causal_rmgi = corr_rmgi * max(causal_weight, 0.0)
+
+        # Intervention estimate
+        intervention_effect = self._estimate_intervention_effect(
+            hack_scores, misalign_scores, forward["optimal_lag"]
+        )
+
+        return CausalRMGIResult(
+            granger_p_value=forward["p_value"],
+            granger_f_stat=forward["f_statistic"],
+            causal_direction=direction,
+            optimal_lag=forward["optimal_lag"],
+            causal_rmgi=round(float(causal_rmgi), 4),
+            correlation_rmgi=round(float(corr_rmgi), 4),
+            intervention_effect=round(float(intervention_effect), 4),
+            metadata={
+                "forward_test": forward,
+                "reverse_test": reverse,
+                "causal_weight": round(float(causal_weight), 4),
+                "window": window,
+                "n_observations": len(hack_scores),
+            },
+        )
+
+    def intervention_analysis(
+        self,
+        hack_scores: list[float],
+        misalign_scores: list[float],
+        intervention_point: int | None = None,
+    ) -> dict:
+        """Estimate the effect of a hypothetical intervention that removes hacking.
+
+        Uses a simple counterfactual: what would misalignment look like if
+        hack scores were set to zero from intervention_point onward?
+
+        Args:
+            hack_scores: Observed hacking time series.
+            misalign_scores: Observed misalignment time series.
+            intervention_point: Step at which to intervene (default: midpoint).
+
+        Returns:
+            Dict with estimated counterfactual misalignment and effect size.
+        """
+        n = len(hack_scores)
+        if intervention_point is None:
+            intervention_point = n // 2
+
+        if n < 10 or intervention_point < 5 or intervention_point >= n - 2:
+            return {
+                "intervention_point": intervention_point,
+                "effect_size": 0.0,
+                "counterfactual_misalignment": list(misalign_scores),
+                "error": "Insufficient data for intervention analysis",
+            }
+
+        # Fit simple linear relationship from pre-intervention period
+        h_pre = np.array(hack_scores[:intervention_point])
+        m_pre = np.array(misalign_scores[:intervention_point])
+
+        if np.std(h_pre) < 1e-10:
+            return {
+                "intervention_point": intervention_point,
+                "effect_size": 0.0,
+                "counterfactual_misalignment": list(misalign_scores),
+                "error": "No variance in pre-intervention hack scores",
+            }
+
+        # Simple OLS: misalign = alpha + beta * hack
+        slope, intercept, _, _, _ = stats.linregress(h_pre, m_pre)
+
+        # Counterfactual: set hack=0 from intervention_point
+        counterfactual = list(misalign_scores[:intervention_point])
+        for i in range(intervention_point, n):
+            # Predicted misalignment with hack=0
+            cf_value = intercept  # beta * 0 + alpha
+            counterfactual.append(float(cf_value))
+
+        # Effect size: average difference between observed and counterfactual
+        observed_post = np.array(misalign_scores[intervention_point:])
+        cf_post = np.array(counterfactual[intervention_point:])
+        effect_size = float(np.mean(observed_post - cf_post))
+
+        return {
+            "intervention_point": intervention_point,
+            "effect_size": round(effect_size, 4),
+            "slope": round(float(slope), 4),
+            "intercept": round(float(intercept), 4),
+            "counterfactual_misalignment": [round(v, 4) for v in counterfactual],
+            "observed_post_mean": round(float(np.mean(observed_post)), 4),
+            "counterfactual_post_mean": round(float(np.mean(cf_post)), 4),
+        }
+
+    def _estimate_intervention_effect(
+        self,
+        hack_scores: list[float],
+        misalign_scores: list[float],
+        lag: int,
+    ) -> float:
+        """Quick estimate of intervention effect using lagged regression."""
+        if len(hack_scores) < lag + 5:
+            return 0.0
+
+        # Regress misalign[t] on hack[t-lag]
+        y = np.array(misalign_scores[lag:])
+        x = np.array(hack_scores[: len(y)])
+
+        if np.std(x) < 1e-10:
+            return 0.0
+
+        try:
+            slope, _, _, _, _ = stats.linregress(x, y)
+            # Effect = slope × mean(hack) — approximate reduction if hack → 0
+            return float(slope * np.mean(x))
+        except Exception:
+            return 0.0

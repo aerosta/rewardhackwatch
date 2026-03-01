@@ -1,5 +1,7 @@
 """Tracking modules for generalization detection and behavioral drift."""
 
+from __future__ import annotations
+
 from .changepoint_detector import (
     Changepoint,
     ChangepointDetector,
@@ -12,6 +14,8 @@ from .drift_tracker import (
     DriftWindow,
 )
 from .generalization_tracker import (
+    CausalRMGI,
+    CausalRMGIResult,
     GeneralizationResult,
     GeneralizationTracker,
     TransitionPoint,
@@ -22,6 +26,9 @@ __all__ = [
     "GeneralizationTracker",
     "GeneralizationResult",
     "TransitionPoint",
+    # Causal RMGI
+    "CausalRMGI",
+    "CausalRMGIResult",
     # Changepoint detection
     "ChangepointDetector",
     "ChangepointResult",

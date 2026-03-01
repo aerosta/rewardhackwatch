@@ -28,12 +28,12 @@ export const api = {
   analyze(trajectory: Record<string, unknown>): Promise<AnalysisResult> {
     return fetchJSON('/analyze', {
       method: 'POST',
-      body: JSON.stringify({ trajectory }),
+      body: JSON.stringify(trajectory),
     });
   },
 
-  getHealth(): Promise<{ status: string; version: string }> {
-    return fetchJSON('/health');
+  getStatus(): Promise<{ status: string; version: string }> {
+    return fetchJSON('/status');
   },
 
   getStats(): Promise<DashboardStats> {
@@ -44,18 +44,10 @@ export const api = {
     return fetchJSON('/alerts');
   },
 
-  getTimeline(): Promise<TimelinePoint[]> {
-    return fetchJSON('/timeline');
-  },
-
-  getSessions(): Promise<SessionLog[]> {
-    return fetchJSON('/sessions');
-  },
-
-  scanDirectory(path: string): Promise<BatchResult> {
-    return fetchJSON('/scan', {
+  analyzeBatch(trajectories: Record<string, unknown>[]): Promise<{ results: AnalysisResult[] }> {
+    return fetchJSON('/analyze/batch', {
       method: 'POST',
-      body: JSON.stringify({ path }),
+      body: JSON.stringify({ trajectories }),
     });
   },
 };

@@ -47,7 +47,7 @@ async def run_with_retry(
             last_error = e
             if attempt < max_attempts - 1:
                 await asyncio.sleep(delay * (2**attempt))
-    raise last_error
+    raise last_error  # type: ignore[misc]
 
 
 class AsyncBatchProcessor:

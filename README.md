@@ -8,7 +8,7 @@
 [![F1 Score](https://img.shields.io/badge/F1-89.7%25-success.svg)]()
 
 <p align="center">
-  <img src="assets/screenshots/dashboard.png" alt="RewardHackWatch Dashboard" width="900">
+  <img src="assets/screenshots/hero.png" alt="RewardHackWatch Dashboard" width="900">
 </p>
 
 RewardHackWatch detects when AI agents game their tests - calling `sys.exit(0)` to fake passing, patching validators, copying reference answers, manipulating test harnesses. It tracks whether these tricks escalate into deception and sabotage.

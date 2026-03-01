@@ -8,6 +8,7 @@ from .run_experiments import (
     ExperimentRunner,
     run_judge_comparison,
 )
+from .evasion_attacks import AttackResult, EvasionAttackSuite, EvasionConfig
 from .transfer_study import TransferStudyConfig, TransferStudyRunner
 
 __all__ = [
@@ -17,4 +18,7 @@ __all__ = [
     "run_judge_comparison",
     "TransferStudyRunner",
     "TransferStudyConfig",
+    "EvasionAttackSuite",
+    "EvasionConfig",
+    "AttackResult",
 ]

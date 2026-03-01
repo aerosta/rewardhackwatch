@@ -87,22 +87,22 @@ export default function Timeline() {
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#363840" />
               <XAxis
                 dataKey="step"
                 tick={{ fill: '#64748b', fontSize: 11 }}
-                axisLine={{ stroke: '#2a2a4a' }}
+                axisLine={{ stroke: '#363840' }}
                 label={{ value: 'Step', position: 'bottom', fill: '#64748b', fontSize: 11 }}
               />
               <YAxis
                 tick={{ fill: '#64748b', fontSize: 11 }}
-                axisLine={{ stroke: '#2a2a4a' }}
+                axisLine={{ stroke: '#363840' }}
                 domain={[0, 1]}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1e1e3a',
-                  border: '1px solid #2a2a4a',
+                  backgroundColor: '#292A30',
+                  border: '1px solid #363840',
                   borderRadius: '8px',
                   fontSize: '12px',
                 }}

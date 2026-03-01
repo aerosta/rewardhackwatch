@@ -73,11 +73,11 @@ export default function CoTViewer() {
                   <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#363840" />
               <XAxis dataKey="step" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} domain={[0, 1]} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e1e3a', border: '1px solid #2a2a4a', borderRadius: '8px', fontSize: '12px' }}
+                contentStyle={{ backgroundColor: '#292A30', border: '1px solid #363840', borderRadius: '8px', fontSize: '12px' }}
                 labelStyle={{ color: '#e2e8f0' }}
                 labelFormatter={v => `Step ${v}`}
               />

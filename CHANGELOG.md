@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### React Frontend
 - Full React 18 + TypeScript + Tailwind CSS v4 dashboard replacing Streamlit
 - 9-page SPA: Dashboard, Quick Analysis, Timeline, Alerts, Cross-Model, CoT Viewer, Eval Workbench, Session Logs, Settings
-- Dark-mode developer tool UI with `#1a1a2e` theme and JetBrains Mono
+- Dark-mode developer tool UI with `#20232B` theme and JetBrains Mono
 - Stat cards with accent-colored left borders
 - Recharts-based visualizations (donut, bar, area, line, radar charts)
 - Code splitting with manual chunks for react and recharts
@@ -28,17 +28,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Weighted scoring system with A-F grade badges
 - Per-entry detail view with full conversation and rule results
 - Per-rule pass rate charts and grade distribution visualization
+- Model 1 vs Model 2 side-by-side comparison with winner indicator
 - JSON and CSV export
 
 #### Settings
 
-- LLM Judge configuration: API key inputs, model selection, temperature/max tokens
+- Dual LLM provider cards: General LLM Provider and Independent Review Provider
+- Provider dropdown (Anthropic / OpenAI) with dynamic model list per provider
+- Eye icon toggle for API key visibility
+- Number inputs for temperature and max tokens
+- Auto-review toggle on Independent Review Provider card
+- Per-section save buttons
 - Settings persistence via localStorage
 
 ### Changed
 
 - License changed to Apache 2.0
 - Version bumped to 1.3.0
+- Color scheme updated: bg `#20232B`, cards `#292A30`, sidebar `#1B1D24`, borders `#363840`
+- All hardcoded colors in chart components replaced with theme variables
 - Sidebar label: "JSONL Analyzer" renamed to "Eval Workbench"
 - All chart containers minimum 320px height
 - American spelling throughout ("analyzed" not "analysed")

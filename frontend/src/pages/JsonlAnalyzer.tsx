@@ -291,6 +291,11 @@ export default function JsonlAnalyzer() {
   const [newRule, setNewRule] = useState<Partial<EvalRule>>({
     type: 'keyword', severity: 'warning', weight: 1, active: true, config: {},
   });
+  // Model 2 comparison
+  const [model2Entries, setModel2Entries] = useState<EvalEntry[]>([]);
+  const [model2Scores, setModel2Scores] = useState<EntryScore[]>([]);
+  const [model2FileName, setModel2FileName] = useState('');
+  const [model2Schema, setModel2Schema] = useState('');
 
   function saveRules(updated: EvalRule[]) {
     setRules(updated);
@@ -347,16 +352,52 @@ export default function JsonlAnalyzer() {
     if (parsed.length > 0) setTab('rules');
   }
 
+  function handleModel2File(file: File) {
+    setModel2FileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const lines = text.trim().split('\n').filter(l => l.trim());
+      const parsed: EvalEntry[] = [];
+      let schema = '';
+      for (let i = 0; i < lines.length; i++) {
+        try {
+          const obj = JSON.parse(lines[i]);
+          const detected = detectSchema(obj);
+          if (i === 0) schema = detected.schema;
+          parsed.push({ index: i, turns: detected.turns, raw: obj, schema: detected.schema });
+        } catch { /* skip */ }
+      }
+      setModel2Entries(parsed);
+      setModel2Schema(schema);
+      setModel2Scores([]);
+    };
+    reader.readAsText(file);
+  }
+
+  const handleModel2Input = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleModel2File(file);
+  }, []);
+
+  const handleModel2Drop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) handleModel2File(file);
+  }, []);
+
   // ── Evaluation ─────────────────────────────────────────────────────
 
   async function runEval() {
     const activeRules = rules.filter(r => r.active);
     if (entries.length === 0 || activeRules.length === 0) return;
 
+    const totalItems = entries.length + model2Entries.length;
     setRunning(true);
-    setProgress({ current: 0, total: entries.length });
+    setProgress({ current: 0, total: totalItems });
     setTab('results');
 
+    // Score Model 1
     const results: EntryScore[] = [];
     const batchSize = 10;
     for (let i = 0; i < entries.length; i += batchSize) {
@@ -364,12 +405,27 @@ export default function JsonlAnalyzer() {
       for (const entry of batch) {
         results.push(scoreEntry(entry, rules));
       }
-      setProgress({ current: Math.min(i + batchSize, entries.length), total: entries.length });
+      setProgress({ current: Math.min(i + batchSize, entries.length), total: totalItems });
       setScores([...results]);
       await new Promise(r => setTimeout(r, 16));
     }
-
     setScores(results);
+
+    // Score Model 2
+    if (model2Entries.length > 0) {
+      const m2results: EntryScore[] = [];
+      for (let i = 0; i < model2Entries.length; i += batchSize) {
+        const batch = model2Entries.slice(i, i + batchSize);
+        for (const entry of batch) {
+          m2results.push(scoreEntry(entry, rules));
+        }
+        setProgress({ current: entries.length + Math.min(i + batchSize, model2Entries.length), total: totalItems });
+        setModel2Scores([...m2results]);
+        await new Promise(r => setTimeout(r, 16));
+      }
+      setModel2Scores(m2results);
+    }
+
     setRunning(false);
   }
 
@@ -454,6 +510,10 @@ export default function JsonlAnalyzer() {
     setFileName('');
     setDetectedSchema('');
     setSelectedEntry(null);
+    setModel2Entries([]);
+    setModel2Scores([]);
+    setModel2FileName('');
+    setModel2Schema('');
     setTab('import');
   }
 
@@ -461,6 +521,13 @@ export default function JsonlAnalyzer() {
 
   const selectedScore = selectedEntry !== null ? scores.find(s => s.entry_index === selectedEntry) : null;
   const selectedData = selectedEntry !== null ? entries.find(e => e.index === selectedEntry) : null;
+
+  const model2Summary = useMemo(() => {
+    if (model2Scores.length === 0) return null;
+    return computeSummary(model2Scores, rules);
+  }, [model2Scores, rules]);
+
+  const hasComparison = model2Entries.length > 0;
 
   // ── Tabs ───────────────────────────────────────────────────────────
 
@@ -597,23 +664,68 @@ export default function JsonlAnalyzer() {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="card flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FileJson className="w-5 h-5 text-accent-blue" />
-                  <div>
-                    <p className="text-sm font-medium text-text-primary">{fileName}</p>
-                    <p className="text-xs text-text-muted">
-                      {entries.length} entries - Schema: <span className="font-mono text-accent-cyan">{detectedSchema}</span>
-                    </p>
+              {/* Model 1 + Model 2 file cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="card">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-blue/15 text-accent-blue">Model 1</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <FileJson className="w-5 h-5 text-accent-blue" />
+                    <div>
+                      <p className="text-sm font-medium text-text-primary">{fileName}</p>
+                      <p className="text-xs text-text-muted">
+                        {entries.length} entries - <span className="font-mono text-accent-cyan">{detectedSchema}</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setTab('rules')}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-accent-blue text-white hover:bg-accent-blue/90 transition-colors"
-                >
-                  Configure Rules <ChevronRight className="w-4 h-4" />
-                </button>
+
+                {model2Entries.length === 0 ? (
+                  <div
+                    onDrop={handleModel2Drop}
+                    onDragOver={e => e.preventDefault()}
+                    className="card border-2 border-dashed border-border-default hover:border-accent-violet/50 transition-colors"
+                  >
+                    <label className="cursor-pointer flex flex-col items-center justify-center py-4">
+                      <p className="text-sm font-semibold text-text-primary mb-1">Add Model 2</p>
+                      <p className="text-xs text-text-muted mb-2">Drop file or click to compare</p>
+                      <input type="file" accept=".jsonl,.json,.ndjson" onChange={handleModel2Input} className="hidden" />
+                      <div className="px-3 py-1.5 rounded-lg bg-accent-violet/10 text-accent-violet text-xs font-medium">
+                        Choose File
+                      </div>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="card">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-violet/15 text-accent-violet">Model 2</span>
+                      <button
+                        onClick={() => { setModel2Entries([]); setModel2Scores([]); setModel2FileName(''); }}
+                        className="text-text-muted hover:text-red-400 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <FileJson className="w-5 h-5 text-accent-violet" />
+                      <div>
+                        <p className="text-sm font-medium text-text-primary">{model2FileName}</p>
+                        <p className="text-xs text-text-muted">
+                          {model2Entries.length} entries - <span className="font-mono text-accent-cyan">{model2Schema}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              <button
+                onClick={() => setTab('rules')}
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-accent-blue text-white hover:bg-accent-blue/90 transition-colors w-full"
+              >
+                Configure Rules <ChevronRight className="w-4 h-4" />
+              </button>
 
               <div className="card overflow-hidden">
                 <div className="px-5 py-3 border-b border-border-default">
@@ -909,7 +1021,7 @@ export default function JsonlAnalyzer() {
                             .filter(([, v]) => v > 0)
                             .map(([k]) => <Cell key={k} fill={GRADE_CHART_COLORS[k as Grade]} />)}
                         </Pie>
-                        <Tooltip contentStyle={{ backgroundColor: '#1e1e3a', border: '1px solid #2a2a4a', borderRadius: '8px', fontSize: '12px' }} />
+                        <Tooltip contentStyle={{ backgroundColor: '#292A30', border: '1px solid #363840', borderRadius: '8px', fontSize: '12px' }} />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
@@ -934,11 +1046,11 @@ export default function JsonlAnalyzer() {
                         layout="vertical"
                         margin={{ left: 10, right: 20 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" horizontal={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#363840" horizontal={false} />
                         <XAxis type="number" domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} />
                         <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} width={140} />
                         <Tooltip
-                          contentStyle={{ backgroundColor: '#1e1e3a', border: '1px solid #2a2a4a', borderRadius: '8px', fontSize: '12px' }}
+                          contentStyle={{ backgroundColor: '#292A30', border: '1px solid #363840', borderRadius: '8px', fontSize: '12px' }}
                           formatter={(v: number) => [`${v}%`, 'Pass Rate']}
                         />
                         <Bar dataKey="rate" radius={[0, 4, 4, 0]}>
@@ -951,6 +1063,77 @@ export default function JsonlAnalyzer() {
                   </div>
                 </ChartCard>
               </div>
+
+              {/* Model Comparison */}
+              {hasComparison && model2Summary && summary && (
+                <div className="card">
+                  <h3 className="text-sm font-semibold text-text-primary mb-4">Model Comparison</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg border border-accent-blue/20 p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-blue/15 text-accent-blue">Model 1</span>
+                        <span className="text-xs text-text-muted">{fileName}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Avg Score</span>
+                          <span className="font-semibold text-text-primary">{(summary.avg_score * 100).toFixed(1)}%</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Grade</span>
+                          <span className={cn('font-bold', GRADE_COLORS[computeGrade(summary.avg_score)].text)}>
+                            {computeGrade(summary.avg_score)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Errors</span>
+                          <span className="font-semibold text-red-400">{summary.by_severity.error.failed}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Entries</span>
+                          <span className="text-text-secondary">{summary.total_entries}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-accent-violet/20 p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-violet/15 text-accent-violet">Model 2</span>
+                        <span className="text-xs text-text-muted">{model2FileName}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Avg Score</span>
+                          <span className="font-semibold text-text-primary">{(model2Summary.avg_score * 100).toFixed(1)}%</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Grade</span>
+                          <span className={cn('font-bold', GRADE_COLORS[computeGrade(model2Summary.avg_score)].text)}>
+                            {computeGrade(model2Summary.avg_score)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Errors</span>
+                          <span className="font-semibold text-red-400">{model2Summary.by_severity.error.failed}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">Entries</span>
+                          <span className="text-text-secondary">{model2Summary.total_entries}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Winner indicator */}
+                  <div className="mt-4 text-center">
+                    {summary.avg_score > model2Summary.avg_score ? (
+                      <p className="text-sm text-accent-blue font-medium">Model 1 scores {((summary.avg_score - model2Summary.avg_score) * 100).toFixed(1)}pp higher</p>
+                    ) : summary.avg_score < model2Summary.avg_score ? (
+                      <p className="text-sm text-accent-violet font-medium">Model 2 scores {((model2Summary.avg_score - summary.avg_score) * 100).toFixed(1)}pp higher</p>
+                    ) : (
+                      <p className="text-sm text-text-muted">Both models scored equally</p>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Export */}
               <div className="flex gap-2">

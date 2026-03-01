@@ -1,8 +1,24 @@
 import { useState } from 'react';
-import { Settings as SettingsIcon, Save, RotateCcw, Server, Bell, Palette, Download, BrainCircuit } from 'lucide-react';
-import type { AppSettings } from '../lib/types';
+import { Settings as SettingsIcon, Save, RotateCcw, Server, Bell, Palette, Download, BrainCircuit, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import type { AppSettings, LLMProvider } from '../lib/types';
 import { PageHeader } from '../components/PageHeader';
 import { cn } from '../lib/utils';
+
+const ANTHROPIC_MODELS = [
+  { value: 'claude-opus-4-6', label: 'Claude Opus 4.6' },
+  { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
+  { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5' },
+];
+
+const OPENAI_MODELS = [
+  { value: 'gpt-5.2', label: 'GPT-5.2' },
+  { value: 'gpt-4o', label: 'GPT-4o' },
+  { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+];
+
+function modelsForProvider(provider: LLMProvider) {
+  return provider === 'anthropic' ? ANTHROPIC_MODELS : OPENAI_MODELS;
+}
 
 const DEFAULT_SETTINGS: AppSettings = {
   api_url: 'http://localhost:8000',
@@ -11,24 +27,37 @@ const DEFAULT_SETTINGS: AppSettings = {
   refresh_interval: 30,
   dark_mode: true,
   notifications_enabled: true,
-  claude_api_key: '',
-  openai_api_key: '',
-  judge_model: 'claude-sonnet-4-20250514',
-  judge_temperature: 0.0,
-  judge_max_tokens: 1024,
+  llm_provider: 'anthropic',
+  llm_api_key: '',
+  llm_model: 'claude-sonnet-4-5-20250929',
+  llm_temperature: 0,
+  llm_max_tokens: 10000,
+  review_provider: 'openai',
+  review_api_key: '',
+  review_model: 'gpt-4o',
+  auto_review: false,
 };
 
 export default function Settings() {
   const [settings, setSettings] = useState<AppSettings>(() => {
     const saved = localStorage.getItem('rhw_settings');
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+    return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
   });
   const [saved, setSaved] = useState(false);
+  const [reviewSaved, setReviewSaved] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [showReviewKey, setShowReviewKey] = useState(false);
 
   function handleSave() {
     localStorage.setItem('rhw_settings', JSON.stringify(settings));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handleSaveReview() {
+    localStorage.setItem('rhw_settings', JSON.stringify(settings));
+    setReviewSaved(true);
+    setTimeout(() => setReviewSaved(false), 2000);
   }
 
   function handleReset() {
@@ -37,7 +66,8 @@ export default function Settings() {
   }
 
   function handleExportConfig() {
-    const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+    const exported = { ...settings, llm_api_key: '***', review_api_key: '***' };
+    const blob = new Blob([JSON.stringify(exported, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -46,32 +76,31 @@ export default function Settings() {
     URL.revokeObjectURL(url);
   }
 
+  function handleProviderChange(provider: LLMProvider) {
+    const models = modelsForProvider(provider);
+    setSettings({ ...settings, llm_provider: provider, llm_model: models[0].value });
+  }
+
+  function handleReviewProviderChange(provider: LLMProvider) {
+    const models = modelsForProvider(provider);
+    setSettings({ ...settings, review_provider: provider, review_model: models[0].value });
+  }
+
+  const inputClass = 'w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary focus:border-accent-blue focus:outline-none';
+  const labelClass = 'block text-xs font-medium text-text-secondary mb-1.5';
+
   return (
     <div className="space-y-6 max-w-3xl">
       <PageHeader
         title="Settings"
         subtitle="Configure detection parameters and preferences"
         actions={
-          <div className="flex gap-2">
-            <button
-              onClick={handleReset}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-bg-elevated text-text-muted hover:text-text-primary transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" /> Reset
-            </button>
-            <button
-              onClick={handleSave}
-              className={cn(
-                'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all',
-                saved
-                  ? 'bg-accent-emerald text-white'
-                  : 'bg-accent-blue text-white hover:bg-accent-blue/90 shadow-lg shadow-accent-blue/20',
-              )}
-            >
-              <Save className="w-4 h-4" />
-              {saved ? 'Saved!' : 'Save'}
-            </button>
-          </div>
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-bg-elevated text-text-muted hover:text-text-primary transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" /> Reset All
+          </button>
         }
       />
 
@@ -83,16 +112,16 @@ export default function Settings() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-1.5">API URL</label>
+            <label className={labelClass}>API URL</label>
             <input
               type="text"
               value={settings.api_url}
               onChange={e => setSettings({ ...settings, api_url: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary focus:border-accent-blue focus:outline-none"
+              className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-text-secondary mb-1.5">
+            <label className={labelClass}>
               Detection Threshold: <span className="text-accent-blue font-mono">{settings.threshold.toFixed(3)}</span>
             </label>
             <input
@@ -112,6 +141,185 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      {/* General LLM Provider */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <BrainCircuit className="w-4 h-4 text-accent-emerald" />
+          <h3 className="text-sm font-semibold text-text-primary">General LLM Provider</h3>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className={labelClass}>Provider</label>
+            <select
+              value={settings.llm_provider}
+              onChange={e => handleProviderChange(e.target.value as LLMProvider)}
+              className={inputClass}
+            >
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>API Key</label>
+            <div className="relative">
+              <input
+                type={showKey ? 'text' : 'password'}
+                value={settings.llm_api_key}
+                onChange={e => setSettings({ ...settings, llm_api_key: e.target.value })}
+                placeholder={settings.llm_provider === 'anthropic' ? 'sk-ant-...' : 'sk-...'}
+                className={cn(inputClass, 'pr-10 font-mono')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowKey(!showKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+              >
+                {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Model</label>
+            <select
+              value={settings.llm_model}
+              onChange={e => setSettings({ ...settings, llm_model: e.target.value })}
+              className={inputClass}
+            >
+              {modelsForProvider(settings.llm_provider).map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Temperature</label>
+              <input
+                type="number"
+                min={0}
+                max={2}
+                step={0.1}
+                value={settings.llm_temperature}
+                onChange={e => setSettings({ ...settings, llm_temperature: parseFloat(e.target.value) || 0 })}
+                className={cn(inputClass, 'font-mono')}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Max Tokens</label>
+              <input
+                type="number"
+                min={1}
+                max={200000}
+                step={1000}
+                value={settings.llm_max_tokens}
+                onChange={e => setSettings({ ...settings, llm_max_tokens: parseInt(e.target.value) || 10000 })}
+                className={cn(inputClass, 'font-mono')}
+              />
+            </div>
+          </div>
+          <button
+            onClick={handleSave}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+              saved
+                ? 'bg-accent-emerald text-white'
+                : 'bg-accent-blue text-white hover:bg-accent-blue/90 shadow-lg shadow-accent-blue/20',
+            )}
+          >
+            <Save className="w-4 h-4" />
+            {saved ? 'Saved!' : 'Save'}
+          </button>
+        </div>
+      </div>
+
+      {/* Independent Review Provider */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-4">
+          <ShieldCheck className="w-4 h-4 text-accent-violet" />
+          <h3 className="text-sm font-semibold text-text-primary">Independent Review Provider</h3>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className={labelClass}>Provider</label>
+            <select
+              value={settings.review_provider}
+              onChange={e => handleReviewProviderChange(e.target.value as LLMProvider)}
+              className={inputClass}
+            >
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>API Key</label>
+            <div className="relative">
+              <input
+                type={showReviewKey ? 'text' : 'password'}
+                value={settings.review_api_key}
+                onChange={e => setSettings({ ...settings, review_api_key: e.target.value })}
+                placeholder={settings.review_provider === 'anthropic' ? 'sk-ant-...' : 'sk-...'}
+                className={cn(inputClass, 'pr-10 font-mono')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowReviewKey(!showReviewKey)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
+              >
+                {showReviewKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className={labelClass}>Model</label>
+            <select
+              value={settings.review_model}
+              onChange={e => setSettings({ ...settings, review_model: e.target.value })}
+              className={inputClass}
+            >
+              {modelsForProvider(settings.review_provider).map(m => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-text-primary">Auto-review after analyze</p>
+              <p className="text-xs text-text-muted">Automatically run independent review on each analysis</p>
+            </div>
+            <button
+              onClick={() => setSettings({ ...settings, auto_review: !settings.auto_review })}
+              className={cn(
+                'relative w-11 h-6 rounded-full transition-colors',
+                settings.auto_review ? 'bg-accent-violet' : 'bg-border-default',
+              )}
+            >
+              <div
+                className={cn(
+                  'absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform',
+                  settings.auto_review ? 'translate-x-5.5' : 'translate-x-0.5',
+                )}
+              />
+            </button>
+          </div>
+          <button
+            onClick={handleSaveReview}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all',
+              reviewSaved
+                ? 'bg-accent-emerald text-white'
+                : 'bg-accent-violet text-white hover:bg-accent-violet/90 shadow-lg shadow-accent-violet/20',
+            )}
+          >
+            <Save className="w-4 h-4" />
+            {reviewSaved ? 'Saved!' : 'Save Review Settings'}
+          </button>
+        </div>
+      </div>
+
+      {/* API Key Note */}
+      <p className="text-xs text-text-muted text-center px-4">
+        API keys are stored locally. They are never sent anywhere except to the selected provider.
+      </p>
 
       {/* Auto Refresh */}
       <div className="card">
@@ -142,7 +350,7 @@ export default function Settings() {
           </div>
           {settings.auto_refresh && (
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1.5">
+              <label className={labelClass}>
                 Refresh interval: <span className="text-accent-cyan font-mono">{settings.refresh_interval}s</span>
               </label>
               <input
@@ -192,94 +400,19 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* LLM Judge */}
-      <div className="card">
-        <div className="flex items-center gap-2 mb-4">
-          <BrainCircuit className="w-4 h-4 text-accent-emerald" />
-          <h3 className="text-sm font-semibold text-text-primary">LLM Judge Configuration</h3>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-medium text-text-secondary mb-1.5">Claude API Key</label>
-            <input
-              type="password"
-              value={settings.claude_api_key}
-              onChange={e => setSettings({ ...settings, claude_api_key: e.target.value })}
-              placeholder="sk-ant-..."
-              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none font-mono"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-text-secondary mb-1.5">OpenAI API Key</label>
-            <input
-              type="password"
-              value={settings.openai_api_key}
-              onChange={e => setSettings({ ...settings, openai_api_key: e.target.value })}
-              placeholder="sk-..."
-              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary placeholder:text-text-muted focus:border-accent-blue focus:outline-none font-mono"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-text-secondary mb-1.5">Judge Model</label>
-            <select
-              value={settings.judge_model}
-              onChange={e => setSettings({ ...settings, judge_model: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-primary focus:border-accent-blue focus:outline-none"
-            >
-              <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
-              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
-              <option value="gpt-4o">GPT-4o</option>
-              <option value="gpt-4o-mini">GPT-4o Mini</option>
-            </select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1.5">
-                Temperature: <span className="text-accent-emerald font-mono">{settings.judge_temperature.toFixed(1)}</span>
-              </label>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.1}
-                value={settings.judge_temperature}
-                onChange={e => setSettings({ ...settings, judge_temperature: parseFloat(e.target.value) })}
-                className="w-full accent-accent-emerald"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1.5">
-                Max Tokens: <span className="text-accent-emerald font-mono">{settings.judge_max_tokens}</span>
-              </label>
-              <input
-                type="range"
-                min={256}
-                max={4096}
-                step={256}
-                value={settings.judge_max_tokens}
-                onChange={e => setSettings({ ...settings, judge_max_tokens: parseInt(e.target.value) })}
-                className="w-full accent-accent-emerald"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Export */}
       <div className="card">
         <div className="flex items-center gap-2 mb-4">
-          <Download className="w-4 h-4 text-accent-violet" />
+          <Download className="w-4 h-4 text-accent-cyan" />
           <h3 className="text-sm font-semibold text-text-primary">Data Export</h3>
         </div>
-        <div className="space-y-3">
-          <button
-            onClick={handleExportConfig}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-secondary hover:text-text-primary hover:border-border-active transition-colors w-full"
-          >
-            <Download className="w-4 h-4" />
-            Export Settings as JSON
-          </button>
-        </div>
+        <button
+          onClick={handleExportConfig}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-bg-primary border border-border-default text-sm text-text-secondary hover:text-text-primary hover:border-border-active transition-colors w-full"
+        >
+          <Download className="w-4 h-4" />
+          Export Settings as JSON
+        </button>
       </div>
 
       {/* About */}

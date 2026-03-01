@@ -150,7 +150,7 @@ function demoSessions(): SessionLog[] {
 export const demoData = {
   stats(): DashboardStats {
     return {
-      total_analysed: 5391,
+      total_analyzed: 5391,
       total_flagged: 194,
       avg_ml_score: 0.036,
       critical_count: 23,

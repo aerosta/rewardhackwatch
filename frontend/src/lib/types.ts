@@ -82,6 +82,8 @@ export interface BatchResult {
   items: SessionLog[];
 }
 
+export type LLMProvider = 'anthropic' | 'openai';
+
 export interface AppSettings {
   api_url: string;
   threshold: number;
@@ -89,11 +91,17 @@ export interface AppSettings {
   refresh_interval: number;
   dark_mode: boolean;
   notifications_enabled: boolean;
-  claude_api_key: string;
-  openai_api_key: string;
-  judge_model: string;
-  judge_temperature: number;
-  judge_max_tokens: number;
+  // General LLM Provider
+  llm_provider: LLMProvider;
+  llm_api_key: string;
+  llm_model: string;
+  llm_temperature: number;
+  llm_max_tokens: number;
+  // Independent Review Provider
+  review_provider: LLMProvider;
+  review_api_key: string;
+  review_model: string;
+  auto_review: boolean;
 }
 
 // ── Eval Workbench Types ──────────────────────────────────────────
@@ -156,7 +164,7 @@ export interface EvalSummary {
 }
 
 export interface DashboardStats {
-  total_analysed: number;
+  total_analyzed: number;
   total_flagged: number;
   avg_ml_score: number;
   critical_count: number;

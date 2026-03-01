@@ -26,7 +26,7 @@ const CATEGORY_COLORS = [
 ];
 
 const TOOLTIP_STYLE = {
-  contentStyle: { backgroundColor: '#1e1e3a', border: '1px solid #2a2a4a', borderRadius: '8px', fontSize: '12px' },
+  contentStyle: { backgroundColor: '#292A30', border: '1px solid #363840', borderRadius: '8px', fontSize: '12px' },
   labelStyle: { color: '#e2e8f0' },
   itemStyle: { color: '#94a3b8' },
 };
@@ -64,7 +64,7 @@ export default function Dashboard() {
 
       {/* Stat Cards — 5 across on wide, 3+2 on medium */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <StatCard title="Total Analysed" value={stats.total_analyzed.toLocaleString()} color="blue" />
+        <StatCard title="Total Analyzed" value={stats.total_analyzed.toLocaleString()} color="blue" />
         <StatCard title="Flagged" value={stats.total_flagged} subtitle={`${((stats.total_flagged / stats.total_analyzed) * 100).toFixed(1)}% detection rate`} color="emerald" />
         <StatCard title="Critical" value={stats.critical_count} color="amber" trend={{ value: -12, label: 'vs last week' }} />
         <StatCard title="Avg ML Score" value={(stats.avg_ml_score * 100).toFixed(1) + '%'} subtitle="Threshold: 2.0%" color="violet" />
@@ -114,7 +114,7 @@ export default function Dashboard() {
           <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryBarData} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#363840" horizontal={false} />
                 <XAxis type="number" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis
                   dataKey="name"
@@ -150,7 +150,7 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a4a" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#363840" />
                 <XAxis dataKey="step" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 1]} />
                 <Tooltip {...TOOLTIP_STYLE} />

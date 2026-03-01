@@ -10,7 +10,7 @@ Based on Anthropic's November 2025 research on emergent misalignment.
 from __future__ import annotations
 
 __version__ = "1.2.0"
-__author__ = "Aerosta Research"
+__author__ = "Aerosta"
 
 from rewardhackwatch.core.analyzer import AnalysisResult, TrajectoryAnalyzer
 from rewardhackwatch.core.analyzers import CoTAnalysisResult, CoTAnalyzer, DeceptionType

@@ -32,7 +32,7 @@ function detectSchema(obj: Record<string, unknown>): { schema: string; turns: Co
   if (Array.isArray(obj.conversations)) {
     const roleMap: Record<string, ConversationTurn['role']> = { human: 'user', gpt: 'assistant', system: 'system' };
     return {
-      schema: 'sharegpt',
+      schema: 'conversation',
       turns: (obj.conversations as Array<{ from: string; value: string }>).map(c => ({
         role: roleMap[c.from] || 'user',
         content: String(c.value ?? ''),
@@ -605,10 +605,10 @@ export default function JsonlAnalyzer() {
                   onDragOver={e => e.preventDefault()}
                   className="card border-2 border-dashed border-border-default hover:border-accent-blue/50 transition-colors"
                 >
-                  <label className="cursor-pointer flex flex-col items-center justify-center py-16">
-                    <Upload className="w-12 h-12 text-text-muted mb-4" />
-                    <p className="text-base font-semibold text-text-primary mb-1">Drop JSONL file here</p>
-                    <p className="text-sm text-text-muted mb-4">Supports .jsonl, .json, .ndjson</p>
+                  <label className="cursor-pointer flex flex-col items-center justify-center py-8">
+                    <Upload className="w-10 h-10 text-text-muted mb-3" />
+                    <p className="text-sm font-semibold text-text-primary mb-1">Drop JSONL file here</p>
+                    <p className="text-xs text-text-muted mb-3">Supports .jsonl, .json, .ndjson</p>
                     <input type="file" accept=".jsonl,.json,.ndjson" onChange={handleFileInput} className="hidden" />
                     <div className="px-4 py-2 rounded-lg bg-accent-blue/10 text-accent-blue text-sm font-medium">
                       Choose File
@@ -651,13 +651,13 @@ export default function JsonlAnalyzer() {
 
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { name: 'openai', example: '{"messages": [...]}' },
-                  { name: 'sharegpt', example: '{"conversations": [...]}' },
-                  { name: 'completion', example: '{"prompt": ..., "completion": ...}' },
+                  { name: 'Model 1', example: '{"messages": [...]}' },
+                  { name: 'Model 2', example: '{"prompt": ..., "completion": ...}' },
+                  { name: 'Custom Format', example: '{"input": ..., "output": ...}' },
                 ].map(s => (
                   <div key={s.name} className="card py-3 text-center">
-                    <p className="text-xs font-mono text-accent-blue mb-1">{s.name}</p>
-                    <p className="text-[10px] text-text-muted">{s.example}</p>
+                    <p className="text-xs font-semibold text-accent-blue mb-1">{s.name}</p>
+                    <p className="text-[10px] text-text-muted font-mono">{s.example}</p>
                   </div>
                 ))}
               </div>

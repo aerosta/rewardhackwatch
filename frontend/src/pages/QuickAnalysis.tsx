@@ -248,10 +248,10 @@ export default function QuickAnalysis() {
               )}
             </>
           ) : (
-            <div className="card flex flex-col items-center justify-center py-20 animate-fade-in">
-              <Zap className="w-10 h-10 text-accent-blue/40 mb-4" />
-              <h3 className="text-sm font-semibold text-text-primary mb-1">Ready to Analyze</h3>
-              <p className="text-[13px] text-text-muted text-center max-w-sm">
+            <div className="card flex flex-col items-center justify-center h-full min-h-[480px] animate-fade-in">
+              <Zap className="w-16 h-16 text-accent-blue/30 mb-6" />
+              <h3 className="text-base font-semibold text-text-primary mb-2">Ready to Analyze</h3>
+              <p className="text-sm text-text-muted text-center max-w-sm">
                 Paste a trajectory JSON, code snippet, or chain-of-thought reasoning to detect reward hacking.
               </p>
             </div>

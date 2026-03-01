@@ -5,15 +5,15 @@ import { PageHeader } from '../components/PageHeader';
 import { cn } from '../lib/utils';
 
 const ANTHROPIC_MODELS = [
-  { value: 'claude-opus-4-6', label: 'Claude Opus 4.6' },
-  { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
-  { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5' },
+  { value: 'claude-opus-4-6', label: 'claude-opus-4-6' },
+  { value: 'claude-sonnet-4-5-20250929', label: 'claude-sonnet-4-5-20250929' },
+  { value: 'claude-haiku-4-5-20251001', label: 'claude-haiku-4-5-20251001' },
 ];
 
 const OPENAI_MODELS = [
-  { value: 'gpt-5.2', label: 'GPT-5.2' },
-  { value: 'gpt-4o', label: 'GPT-4o' },
-  { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+  { value: 'gpt-5.2', label: 'gpt-5.2' },
+  { value: 'gpt-4o', label: 'gpt-4o' },
+  { value: 'gpt-4o-mini', label: 'gpt-4o-mini' },
 ];
 
 function modelsForProvider(provider: LLMProvider) {
@@ -90,7 +90,7 @@ export default function Settings() {
   const labelClass = 'block text-xs font-medium text-text-secondary mb-1.5';
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <PageHeader
         title="Settings"
         subtitle="Configure detection parameters and preferences"

@@ -4,7 +4,7 @@
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)]()
+[![CI](https://github.com/aerosta/rewardhackwatch/actions/workflows/ci.yml/badge.svg)](https://github.com/aerosta/rewardhackwatch/actions/workflows/ci.yml)
 
 <p align="center">
   <img src="assets/screenshots/hero.png" alt="RewardHackWatch Dashboard" width="900">
@@ -42,7 +42,7 @@ The DistilBERT classifier is [hosted on HuggingFace](https://huggingface.co/aero
 rewardhackwatch analyze trajectory.json   # Analyze a file
 rewardhackwatch scan ./trajectories/      # Scan a directory
 rewardhackwatch serve --port 8000         # Start API server
-rewardhackwatch dashboard                 # Launch React frontend
+rewardhackwatch dashboard                 # Launch Streamlit dashboard
 rewardhackwatch calibrate ./clean_data/   # Calibrate threshold
 ```
 
@@ -59,8 +59,16 @@ RewardHackWatch is an open-source attempt to detect these behaviors at runtime.
 - **LLM judges** - Claude, OpenAI, or local Llama via Ollama for offline operation
 - **RMGI metric** - experimental tracking of hack-to-misalignment correlation over trajectories
 - **Eval Workbench** - batch-score JSONL trajectory files with custom rules and LLM judge scoring
-- **React dashboard** - local dark-mode UI with analysis, alerts, timeline, and session logs
+- **Dashboards** - Streamlit dashboard via CLI; React 19 frontend in `frontend/` for local analysis and evaluation workflows
 - **HackBench** - standardized benchmark dataset (4,300+ trajectories, 9 categories)
+
+## Tech Stack
+
+- **Core:** Python 3.9+, PyTorch, Hugging Face Transformers, DistilBERT, scikit-learn
+- **Backend:** FastAPI, Uvicorn, Typer (CLI), Pydantic, Streamlit
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, Recharts
+- **Data:** NumPy, Pandas, SciPy, Ruptures, SQLite
+- **Tools:** Ruff, MyPy, pytest, Rich
 
 ## Results
 
@@ -112,10 +120,10 @@ detector.calibrate_threshold(clean_trajectories, percentile=99)
 
 ## Documentation
 
-- [Technical Report](docs/TECHNICAL.md) - full methodology and experiments
-- [RMGI Specification](docs/RMGI.md) - formal metric definition
 - [Architecture](ARCHITECTURE.md) - system design
 - [Paper](paper/RewardHackWatch.pdf) - research paper
+- [HuggingFace Model](https://huggingface.co/aerosta/rewardhackwatch) - pre-trained DistilBERT classifier
+- [Project Page](https://aerosta.github.io/rewardhackwatch) - overview and links
 
 <details>
 <summary><strong>Architecture</strong></summary>
@@ -134,7 +142,7 @@ rewardhackwatch/
   rhw_bench/             # HackBench dataset, generators, test cases
   api/                   # FastAPI REST server
   cli.py                 # Command line interface
-frontend/                # React 18 + TypeScript + Tailwind CSS v4 dashboard
+frontend/                # React 19 + TypeScript + Tailwind CSS v4 dashboard
 paper/                   # Research paper
 ```
 
@@ -197,11 +205,11 @@ Trajectory Input
 
 | RMGI Transition | Architecture |
 |:---:|:---:|
-| ![RMGI transition detection](figures/rmgi_transition.png) | ![System architecture](figures/architecture.png) |
+| ![RMGI transition detection](figures/fig1_transition_plot.png) | ![System architecture](figures/fig2_architecture.png) |
 | **Benchmark** | **Categories** |
-| ![Baseline comparison](figures/benchmark.png) | ![Per-category F1](figures/categories.png) |
+| ![Baseline comparison](figures/fig3_benchmark_comparison.png) | ![Per-category F1](figures/fig4_category_performance.png) |
 | **Threshold** | **Calibration** |
-| ![Threshold sensitivity](figures/threshold.png) | ![Model calibration](figures/calibration.png) |
+| ![Threshold sensitivity](figures/fig5_threshold_sensitivity.png) | ![Model calibration](figures/fig6_calibration.png) |
 
 </details>
 

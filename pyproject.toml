@@ -31,7 +31,7 @@ dependencies = [
     # LLM APIs
     "anthropic>=0.20.0",
     "ollama>=0.1.0",
-    "openai>=1.0.0",
+    "openai>=2.31.0",
 
     # API
     "fastapi>=0.100.0",

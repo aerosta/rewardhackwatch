@@ -65,7 +65,7 @@ dev = [
     "pytest-cov>=5.0.0",
     "black>=24.10.0",
     "ruff>=0.7.0",
-    "mypy>=1.13.0",
+    "mypy>=1.19.1",
     "pre-commit>=4.0.0",
 ]
 dashboard = [
